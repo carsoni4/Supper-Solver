@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/tvContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="exampleUser"
+        android:textColor="#000000"
+        android:fontFamily="serif-monospace"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvContact"
+        android:fontFamily="serif-monospace"
+        android:text="Example comment"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:backgroundTint="#f5ee9e"
+        android:fontFamily="serif-monospace"
+        android:text="View"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/deletebtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:backgroundTint="#f5ee9e"
+        android:fontFamily="serif-monospace"
+        android:text="Delete"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
+</RelativeLayout>

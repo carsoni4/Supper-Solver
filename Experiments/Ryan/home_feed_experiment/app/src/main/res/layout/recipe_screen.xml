@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recipe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/recipe_layout"
+        android:layout_width="357dp"
+        android:layout_height="456dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.100">
+
+        <TextView
+            android:id="@+id/recipe_name"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rectangle"
+            android:gravity="center"
+            android:text="Chicken Parmesan"
+            android:textAlignment="center"
+            android:textColor="#fcfec3"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            app:layout_constraintVertical_bias="0.077"></TextView>
+
+        <ImageView
+            android:id="@+id/recipe_image"
+            android:layout_width="343dp"
+            android:layout_height="268dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/chkn" />
+
+        <TextView
+            android:id="@+id/recipe_creator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Created By: "
+            android:textColor="#fcfec3" />
+
+        <LinearLayout
+            android:id="@+id/linearlayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/star_one"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/star_filled"></Button>
+
+            <Button
+                android:id="@+id/star_two"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/star_filled"></Button>
+
+            <Button
+                android:id="@+id/star_three"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/star_filled"></Button>
+
+            <Button
+                android:id="@+id/star_four"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/star"></Button>
+
+            <Button
+                android:id="@+id/star_five"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/star"></Button>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="60dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recipe_layout"
+        app:layout_constraintVertical_bias="0.978">
+
+        <Button
+            android:id="@+id/recipe_ratings_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:text="Ratings"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="225dp"
+            tools:layout_editor_absoluteY="543dp"></Button>
+
+        <Button
+            android:id="@+id/recipe_comments_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:backgroundTint="#533B2D"
+            android:text="Comments"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="59dp"
+            tools:layout_editor_absoluteY="543dp"></Button>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

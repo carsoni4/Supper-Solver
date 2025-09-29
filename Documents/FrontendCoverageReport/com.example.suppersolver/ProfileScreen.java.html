@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfileScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">ProfileScreen.java</span></div><h1>ProfileScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ImageView;
+import static android.os.SystemClock.sleep;
+import android.util.Base64;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.Request;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import androidx.core.app.NotificationCompat;
+import android.app.PendingIntent;
+import android.app.NotificationManager;
+import android.content.Context;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Profile screen for a user. The display is different for the user's own profile versus other profiles.
+ */
+<span class="fc" id="L49">public class ProfileScreen extends AppCompatActivity implements WebSocketListener {</span>
+
+<span class="fc" id="L51">    private String serverURL = &quot;ws://coms-3090-025.class.las.iastate.edu:8080/chat/&quot;;</span>
+<span class="fc" id="L52">    private String postURL = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users/addFriend/&quot;;</span>
+<span class="fc" id="L53">    private String getURL = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users/&quot;;</span>
+<span class="fc" id="L54">    private String getFriendURL = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users/getFriends/&quot;;</span>
+<span class="fc" id="L55">    private String getProfilePic = &quot;http://coms-3090-025.class.las.iastate.edu:8080/image/user/&quot;;</span>
+    private String[] friendsList;
+    private boolean alreadyFriends;
+
+    private static final String URL_IMAGE = &quot;&quot;;
+    private String curUsername;
+    private String userID;
+    private String posterID;
+    private String getCreatorUser;
+
+
+    private TextView welcomeMessage;
+    private TextView description;
+
+    private Button viewFriends;
+    private Button viewRecipes;
+    private Button editProfile;
+    private Button addFriend;
+    private Button backButton;
+
+    private ImageView profileImage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="fc" id="L80">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L81">        setContentView(R.layout.profile_screen);</span>
+<span class="fc" id="L82">        EdgeToEdge.enable(this);</span>
+<span class="fc" id="L83">        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.profile), (v, insets) -&gt; {</span>
+<span class="fc" id="L84">            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());</span>
+<span class="fc" id="L85">            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);</span>
+<span class="fc" id="L86">            return insets;</span>
+        });
+
+<span class="fc" id="L89">        description = findViewById(R.id.description);</span>
+<span class="fc" id="L90">        welcomeMessage = findViewById(R.id.welcomeMessage);</span>
+<span class="fc" id="L91">        viewFriends = findViewById(R.id.viewFriends);</span>
+<span class="fc" id="L92">        viewRecipes = findViewById(R.id.viewRecipes);</span>
+<span class="fc" id="L93">        editProfile = findViewById(R.id.editProfile);</span>
+<span class="fc" id="L94">        profileImage = findViewById(R.id.profileImage);</span>
+<span class="fc" id="L95">        addFriend = findViewById(R.id.addFriend);</span>
+<span class="fc" id="L96">        backButton = findViewById(R.id.back_button);</span>
+
+<span class="fc" id="L98">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (extras == null) {</span>
+<span class="nc" id="L100">            welcomeMessage.setText(&quot;Error getting username&quot;);</span>
+        } else {
+<span class="fc" id="L102">            curUsername = extras.getString(&quot;username&quot;);</span>
+<span class="fc" id="L103">            userID = extras.getString(&quot;USERID&quot;);</span>
+<span class="fc" id="L104">            posterID = extras.getString(&quot;creatorID&quot;);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            if (posterID != null) {</span>
+<span class="fc" id="L106">                getRequest(posterID);</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">                if(!userID.equals(posterID)){</span>
+<span class="fc" id="L108">                    getRequestF(new Runnable() {</span>
+                        @Override
+                        public void run() {
+<span class="fc" id="L111">                            Log.d(&quot;Friend Status&quot;, String.valueOf(alreadyFriends));</span>
+                            // This code only runs after getRequestF is done
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">                            if (!alreadyFriends) {</span>
+<span class="nc" id="L114">                                viewFriends.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L115">                                viewRecipes.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L116">                                editProfile.setVisibility(View.INVISIBLE);</span>
+<span class="nc" id="L117">                                addFriend.setVisibility(View.VISIBLE);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">                            } else if (alreadyFriends) {</span>
+<span class="fc" id="L119">                                viewFriends.setVisibility(View.INVISIBLE);</span>
+<span class="fc" id="L120">                                viewRecipes.setVisibility(View.INVISIBLE);</span>
+<span class="fc" id="L121">                                editProfile.setVisibility(View.INVISIBLE);</span>
+<span class="fc" id="L122">                                addFriend.setVisibility(View.INVISIBLE);</span>
+                            }
+<span class="fc" id="L124">                        }</span>
+                    });
+                } else {
+<span class="nc" id="L127">                    requestProfilePic(userID);</span>
+<span class="nc" id="L128">                    getRequest(userID);</span>
+<span class="nc" id="L129">                    viewFriends.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L130">                    viewRecipes.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L131">                    editProfile.setVisibility(View.VISIBLE);</span>
+<span class="nc" id="L132">                    addFriend.setVisibility(View.INVISIBLE);</span>
+                }
+            } else {
+<span class="fc" id="L135">                requestProfilePic(userID);</span>
+<span class="fc" id="L136">                getRequest(userID);</span>
+<span class="fc" id="L137">                viewFriends.setVisibility(View.VISIBLE);</span>
+<span class="fc" id="L138">                viewRecipes.setVisibility(View.VISIBLE);</span>
+<span class="fc" id="L139">                editProfile.setVisibility(View.VISIBLE);</span>
+<span class="fc" id="L140">                addFriend.setVisibility(View.INVISIBLE);</span>
+            }
+        }
+
+<span class="fc" id="L144">        WebSocketManager.getInstance().connectWebSocket(serverURL + userID);</span>
+<span class="fc" id="L145">        WebSocketManager.getInstance().setWebSocketListener(ProfileScreen.this);</span>
+
+<span class="fc" id="L147">        Log.d(&quot;Friend Status&quot;, String.valueOf(alreadyFriends));</span>
+
+<span class="fc" id="L149">        backButton.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L151">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L152">                Intent intent = new Intent(ProfileScreen.this, HomeFeed.class);</span>
+<span class="fc" id="L153">                intent.putExtra(&quot;username&quot;, curUsername);</span>
+<span class="fc" id="L154">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L155">                startActivity(intent);</span>
+<span class="fc" id="L156">            }</span>
+        });
+
+<span class="fc" id="L159">        viewFriends.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L161">                Intent intent = new Intent(ProfileScreen.this, FriendScreen.class);</span>
+<span class="fc" id="L162">                intent.putExtra(&quot;username&quot;, curUsername);</span>
+<span class="fc" id="L163">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L164">                startActivity(intent);</span>
+<span class="fc" id="L165">            }</span>
+        });
+
+<span class="fc" id="L168">        viewRecipes.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="nc" id="L170">                Intent intent = new Intent(ProfileScreen.this, HomeFeed.class);</span>
+<span class="nc" id="L171">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="nc" id="L172">                startActivity(intent);</span>
+<span class="nc" id="L173">            }</span>
+        });
+
+<span class="fc" id="L176">        editProfile.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L178">                Intent intent = new Intent(ProfileScreen.this, EditProfileScreen.class);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                if (posterID != null) {</span>
+<span class="nc" id="L180">                    intent.putExtra(&quot;creatorID&quot;, posterID);</span>
+                } else {
+<span class="fc" id="L182">                    intent.putExtra(&quot;USERID&quot;, userID);</span>
+                }
+<span class="fc" id="L184">                startActivity(intent);</span>
+<span class="fc" id="L185">            }</span>
+        });
+
+<span class="fc" id="L188">        addFriend.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="nc" id="L190">                postRequest();</span>
+<span class="nc" id="L191">                WebSocketManager.getInstance().sendMessage(&quot;[FRIEND] &quot; + getCreatorUser);</span>
+<span class="nc" id="L192">            }</span>
+        });
+
+<span class="fc" id="L195">    }</span>
+
+    @Override
+    public void onWebSocketMessage(String message) {
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (message.startsWith(&quot;[FRIENDNOTIFICATION]&quot;)) {</span>
+<span class="nc" id="L200">            runOnUiThread(new Runnable() {</span>
+                @Override
+                public void run() {
+<span class="nc" id="L203">                    Toast.makeText(ProfileScreen.this, &quot;FRIEND REQUEST RECEIVED&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L204">                }</span>
+            });
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        } else if (message.startsWith(&quot;[NOTIFICATION]&quot;)) {</span>
+<span class="nc" id="L207">            runOnUiThread(new Runnable() {</span>
+                @Override
+                public void run() {
+<span class="nc" id="L210">                    Toast.makeText(ProfileScreen.this, &quot;New Message From&quot; + message.substring(14), Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L211">                }</span>
+            });
+        }
+<span class="fc" id="L214">    }</span>
+
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+<span class="fc" id="L219">        Log.d(&quot;Websocket Test&quot;, &quot;Websocket Closed&quot;);</span>
+<span class="fc" id="L220">    }</span>
+
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakedata) {
+<span class="fc" id="L224">        Log.d(&quot;Websocket Test&quot;, &quot;Websocket Opened&quot;);</span>
+<span class="fc" id="L225">    }</span>
+
+    @Override
+    public void onWebSocketError(Exception ex) {
+<span class="nc" id="L229">        Log.d(&quot;Websocket Test&quot;, String.valueOf(ex));</span>
+<span class="nc" id="L230">    }</span>
+
+    private void makeImageRequest(String imgSrc) {
+
+<span class="fc" id="L234">        ImageRequest imageRequest = new ImageRequest(</span>
+                imgSrc,
+<span class="fc" id="L236">                new Response.Listener&lt;Bitmap&gt;() {</span>
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        // Display the image in the ImageView
+<span class="fc" id="L240">                        profileImage.setImageBitmap(response);</span>
+<span class="fc" id="L241">                    }</span>
+                },
+                0, // Width, set to 0 to get the original width
+                0, // Height, set to 0 to get the original height
+                ImageView.ScaleType.FIT_XY, // ScaleType
+                Bitmap.Config.RGB_565, // Bitmap config
+
+<span class="fc" id="L248">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle errors here
+<span class="nc" id="L252">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L253">                    }</span>
+                }
+        );
+
+        // Adding request to request queue
+<span class="fc" id="L258">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(imageRequest);</span>
+<span class="fc" id="L259">    }</span>
+
+    private void getRequest(String id) {
+<span class="fc" id="L262">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.GET,
+                getURL + id,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L266">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="fc" id="L269">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+                        try {
+<span class="fc" id="L271">                            getCreatorUser = response.getString(&quot;username&quot;);</span>
+<span class="fc" id="L272">                            welcomeMessage.setText(getCreatorUser);</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">                            if(response.getString(&quot;bio&quot;).equals(&quot;null&quot;)) {</span>
+<span class="fc" id="L274">                                description.setText(&quot;No description for this user has been added.&quot;);</span>
+                            } else {
+<span class="fc" id="L276">                                description.setText(response.getString(&quot;bio&quot;));</span>
+                            }
+<span class="fc" id="L278">                            requestProfilePic(posterID);</span>
+<span class="nc" id="L279">                        } catch (JSONException e) {</span>
+<span class="nc" id="L280">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L281">                        }</span>
+<span class="fc" id="L282">                    }</span>
+                },
+<span class="fc" id="L284">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L287">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L288">                    }</span>
+                }
+<span class="fc" id="L290">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L293">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L296">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L301">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L304">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L309">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L310">    }</span>
+
+    private void getRequestF(final Runnable onFriendsChecked) {
+<span class="fc" id="L313">        JsonArrayRequest jsonARequest = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                getFriendURL + userID,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L317">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="fc" id="L320">                        Log.d(&quot;Volley Response F&quot;, response.toString());</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="fc" id="L323">                                JSONObject curFriend = response.getJSONObject(i);</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">                                if (curFriend.getString(&quot;id&quot;).equals(posterID)) {</span>
+<span class="fc" id="L325">                                    alreadyFriends = true;</span>
+<span class="fc" id="L326">                                    break;</span>
+                                } else {
+<span class="nc" id="L328">                                    alreadyFriends = false;</span>
+                                }
+<span class="nc" id="L330">                            } catch (JSONException e) {</span>
+<span class="nc" id="L331">                                throw new RuntimeException(e);</span>
+<span class="nc" id="L332">                            }</span>
+                        }
+<span class="fc" id="L334">                        onFriendsChecked.run();</span>
+<span class="fc" id="L335">                    }</span>
+                },
+<span class="fc" id="L337">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L340">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L341">                        onFriendsChecked.run();</span>
+<span class="nc" id="L342">                    }</span>
+                }
+<span class="fc" id="L344">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L347">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L350">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L355">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L358">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L363">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonARequest);</span>
+<span class="fc" id="L364">    }</span>
+
+    private void postRequest() {
+<span class="nc" id="L367">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                postURL + userID + &quot;/&quot; + posterID,
+                null,
+<span class="nc" id="L371">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L374">                        Log.d(&quot;Volley Response P&quot;, response.toString());</span>
+<span class="nc" id="L375">                    }</span>
+                },
+<span class="nc" id="L377">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L380">                        Log.d(&quot;Volley Error P&quot;, error.getMessage());</span>
+<span class="nc" id="L381">                    }</span>
+                }
+<span class="nc" id="L383">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L386">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L389">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L394">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L397">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L402">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L403">    }</span>
+
+    private void requestProfilePic(String rid) {
+<span class="fc" id="L406">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.GET,
+                getProfilePic + rid,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L410">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+<span class="fc" id="L414">                            String imgSource = response.getString(&quot;imgUrl&quot;);</span>
+<span class="fc" id="L415">                            makeImageRequest(imgSource);</span>
+<span class="nc" id="L416">                        } catch (JSONException e) {</span>
+<span class="nc" id="L417">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L418">                        }</span>
+<span class="fc" id="L419">                    }</span>
+                },
+<span class="fc" id="L421">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L424">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L425">                    }</span>
+                }
+<span class="fc" id="L427">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L430">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L433">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L438">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L441">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L446">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L447">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

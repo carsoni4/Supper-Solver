@@ -1,0 +1,278 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import org.apache.tomcat.util.buf.UEncoder;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import supperSolver.DataTransferObjects.LoginRequestDTO;
+&nbsp;import supperSolver.Models.*;
+&nbsp;import supperSolver.Repositories.RComment;
+&nbsp;import supperSolver.Repositories.RIngredient;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;import supperSolver.Repositories.RImage;
+&nbsp;import supperSolver.Repositories.RFriend;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+<b class="nc">&nbsp;public class UserController</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    private RUser rUser;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RImage rImage;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    RFriend rFriend;
+&nbsp;
+&nbsp;    // Gets all users
+&nbsp;    @Operation(summary = &quot;Gets a list of all users&quot;)
+&nbsp;    @GetMapping(&quot;users&quot;)
+&nbsp;    public List&lt;MUser&gt; getUsers()
+&nbsp;    {
+<b class="nc">&nbsp;        return rUser.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Gets a MUser object by their ID
+&nbsp;    @Operation(summary = &quot;Returns a single user by its unique ID&quot;)
+&nbsp;    @GetMapping(&quot;/users/{ID}&quot;)
+&nbsp;    public Optional&lt;MUser&gt; GetUserByID(@PathVariable int ID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rUser.findById(ID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Get userID by username and password
+&nbsp;    @Operation(summary = &quot;Returns user ID given their username and password&quot;)
+&nbsp;    @GetMapping(&quot;/userID/{username}/{password}&quot;)
+&nbsp;    public String GetUserID(@PathVariable String username, @PathVariable String password)
+&nbsp;    {
+<b class="nc">&nbsp;        Optional&lt;MUser&gt; user = rUser.findByUsernameAndPassword(username, password);</b>
+<b class="nc">&nbsp;        return user.map(mUser -&gt; Integer.toString(mUser.getID())).orElse(&quot;-1&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Returns users that have a name like username\
+&nbsp;    @Operation(summary = &quot;Returns a list of users with similar usernames to the parameter given&quot;)
+&nbsp;    @GetMapping(&quot;/users/searchByUsername/{username}&quot;)
+&nbsp;    public List&lt;MUser&gt; searchByUsername(@PathVariable String username)
+&nbsp;    {
+<b class="nc">&nbsp;        return rUser.findByUsernameLike(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Returns friends that have a name like username
+&nbsp;    @Operation(summary = &quot;Returns a list of users that have a similar username to the given parameter and are also friends with the person who intiated the search&quot;)
+&nbsp;    @GetMapping(&quot;/users/searchByFriends/{userID}/{username}&quot;)
+&nbsp;    public List&lt;MUser&gt; searchByFriends(@PathVariable int userID, @PathVariable String username)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MUser&gt; totalSearch = rUser.findByUsernameLike(username);</b>
+<b class="nc">&nbsp;        List&lt;MUser&gt; totalFriends = getFriendsByID(userID);</b>
+&nbsp;
+&nbsp;        //only contains elements that are also in friends
+<b class="nc">&nbsp;        totalSearch.retainAll(totalFriends);</b>
+&nbsp;
+<b class="nc">&nbsp;        return totalSearch;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Gets all friends by userID
+&nbsp;    @Operation(summary = &quot;Return a list of all the users friends&quot;)
+&nbsp;    @GetMapping(&quot;users/getFriends/{ID}&quot;)
+&nbsp;    public List&lt;MUser&gt; getFriendsByID(@PathVariable int ID)
+&nbsp;    {
+<b class="nc">&nbsp;        MUser user = rUser.findById(ID).get();</b>
+<b class="nc">&nbsp;        return rFriend.findFriends(user);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Add friend by userID
+&nbsp;    @Operation(summary = &quot;Adds a friend to the users friends list&quot;)
+&nbsp;    @PostMapping(&quot;/users/addFriend/{ID}/{friendID}&quot;)
+&nbsp;    public void addFriend(@PathVariable int ID, @PathVariable int friendID)
+&nbsp;    {
+<b class="nc">&nbsp;        MUser user = rUser.findById(ID).get();</b>
+<b class="nc">&nbsp;        MUser friend = rUser.findById(friendID).get();</b>
+&nbsp;
+<b class="nc">&nbsp;        MFriend addFriend = new MFriend(user, friend);</b>
+<b class="nc">&nbsp;        rFriend.save(addFriend);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Creates a new MUser
+&nbsp;    @Operation(summary = &quot;Creates a user object on post&quot;)
+&nbsp;    @PostMapping(&quot;/users&quot;)
+&nbsp;    public @ResponseBody MUser createUser(@RequestBody MUser r)
+&nbsp;    {
+&nbsp;        //need to check for duplicate usernames if its duplicate throw exception
+<b class="nc">&nbsp;        if(rUser.findByUsername(r.getUsername()).isPresent()){</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Duplicate username: &quot; + r.getUsername() + &quot; please make a unique username!&quot;);</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            return rUser.save(r);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Updates an existing user
+&nbsp;    @Operation(summary = &quot;Updates a user object given their ID&quot;)
+&nbsp;    @PutMapping(path = &quot;/users/{ID}&quot;)
+&nbsp;    public ResponseEntity&lt;MUser&gt; updateUser(@PathVariable int ID, @RequestBody MUser user)
+&nbsp;    {
+<b class="nc">&nbsp;        if (rUser.findByUsername(user.getUsername()).isPresent())</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Duplicate username: &quot; + user.getUsername() + &quot; please try a unique username&quot;);</b>
+&nbsp;        else
+&nbsp;        {
+<b class="nc">&nbsp;            MUser existingUser = rUser.findById(ID).get();</b>
+&nbsp;
+<b class="nc">&nbsp;            existingUser.setIsAdmin(user.getIsAdmin());</b>
+<b class="nc">&nbsp;            existingUser.setIsAdvertiser(user.getIsAdvertiser());</b>
+<b class="nc">&nbsp;            existingUser.setName(user.getName());</b>
+<b class="nc">&nbsp;            existingUser.setUsername(user.getUsername());</b>
+<b class="nc">&nbsp;            existingUser.setPassword(user.getPassword());</b>
+<b class="nc">&nbsp;            existingUser.setBio(user.getBio());</b>
+<b class="nc">&nbsp;            existingUser.setGroupID(user.getGroupID());</b>
+&nbsp;
+<b class="nc">&nbsp;            rUser.save(existingUser);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(existingUser);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // User login
+&nbsp;    @Operation(summary = &quot;Returns a boolean result, true if there is a matching pair of username and password in the database, otherwise false&quot;)
+&nbsp;    @PostMapping(&quot;/login&quot;)
+&nbsp;    public MUser login(@RequestBody LoginRequestDTO loginRequest) {
+&nbsp;        // Try to find the user by username and password
+<b class="nc">&nbsp;        Optional&lt;MUser&gt; user = rUser.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user.isPresent())</b>
+&nbsp;        {// Credentials are valid, return success response
+<b class="nc">&nbsp;            return user.get();</b>
+&nbsp;        }
+&nbsp;        else
+&nbsp;        {
+&nbsp;            // Invalid credentials, return error response
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Deletes a MUser by its ID
+&nbsp;    @Operation(summary = &quot;Deletes a user based on their unique ID&quot;)
+&nbsp;    @DeleteMapping(&quot;/users/{ID}&quot;)
+&nbsp;    public void DeleteUser(@PathVariable int ID)
+&nbsp;    {
+<b class="nc">&nbsp;        rUser.deleteById(ID);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 14:04</div>
+</div>
+</body>
+</html>

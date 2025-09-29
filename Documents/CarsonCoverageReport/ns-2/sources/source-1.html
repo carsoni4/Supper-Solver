@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AdvertisementController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: AdvertisementController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AdvertisementController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import supperSolver.DataTransferObjects.AdvertisementDTO;
+&nbsp;import supperSolver.Models.MAdvertisement;
+&nbsp;import supperSolver.Models.MUser;
+&nbsp;import supperSolver.Repositories.RAdvertisement;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+<b class="nc">&nbsp;public class AdvertisementController</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    RAdvertisement rAdvertisement;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    RUser rUser;
+&nbsp;
+&nbsp;    // Gets all advertisements
+&nbsp;    @GetMapping(&quot;advertisements&quot;)
+&nbsp;    public List&lt;MAdvertisement&gt; getAdvertisements()
+&nbsp;    {
+<b class="nc">&nbsp;        return rAdvertisement.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Gets an advertisement by ID
+&nbsp;    @GetMapping(&quot;advertisements/ID/{ID}&quot;)
+&nbsp;    public MAdvertisement getAdvertisementById(@PathVariable int ID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rAdvertisement.findById(ID).get();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Creates a new advertisement
+&nbsp;    @PostMapping(&quot;advertisements&quot;)
+&nbsp;    public MAdvertisement createAdvertisement(@RequestBody AdvertisementDTO advertisement)
+&nbsp;    {
+<b class="nc">&nbsp;        MAdvertisement newAdvertisement = new MAdvertisement();</b>
+<b class="nc">&nbsp;        newAdvertisement.setImageURL(advertisement.getImageURL());</b>
+<b class="nc">&nbsp;        newAdvertisement.setDescription(advertisement.getDescription());</b>
+&nbsp;
+<b class="nc">&nbsp;        MUser user = rUser.findById(advertisement.getAdvertiserID()).get();</b>
+&nbsp;
+<b class="nc">&nbsp;        if(!user.getIsAdvertiser())</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;
+<b class="nc">&nbsp;        newAdvertisement.setAdvertiser(user);</b>
+<b class="nc">&nbsp;        return rAdvertisement.save(newAdvertisement);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Updates an existing comment
+&nbsp;    @PutMapping(&quot;advertisements/{ID}&quot;)
+&nbsp;    public MAdvertisement updateAdvertisement(@PathVariable(&quot;ID&quot;) int ID, @RequestBody AdvertisementDTO advertisement)
+&nbsp;    {
+<b class="nc">&nbsp;        MAdvertisement oldAdvertisement = rAdvertisement.findById(ID).get();</b>
+<b class="nc">&nbsp;        oldAdvertisement.setImageURL(advertisement.getImageURL());</b>
+<b class="nc">&nbsp;        oldAdvertisement.setDescription(advertisement.getDescription());</b>
+&nbsp;
+<b class="nc">&nbsp;        MUser user = rUser.findById(advertisement.getAdvertiserID()).get();</b>
+&nbsp;
+<b class="nc">&nbsp;        if(!user.getIsAdvertiser())</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;
+<b class="nc">&nbsp;        oldAdvertisement.setAdvertiser(user);</b>
+<b class="nc">&nbsp;        return rAdvertisement.save(oldAdvertisement);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Deletes an advertisement
+&nbsp;    @DeleteMapping(&quot;advertisements/{ID}&quot;)
+&nbsp;    public void deleteAdvertisement(@PathVariable int ID)
+&nbsp;    {
+<b class="nc">&nbsp;        rAdvertisement.deleteById(ID);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 14:04</div>
+</div>
+</body>
+</html>

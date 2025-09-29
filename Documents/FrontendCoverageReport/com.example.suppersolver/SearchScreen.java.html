@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">SearchScreen.java</span></div><h1>SearchScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.ListView;
+import android.widget.Button;
+import androidx.appcompat.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Search by recipes or users. Click on one to view a recipe screen or view a profile.
+ */
+<span class="fc" id="L37">public class SearchScreen extends AppCompatActivity {</span>
+
+    // URLs for server requests
+<span class="fc" id="L40">    private String getURLUsers = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users&quot;;</span>
+<span class="fc" id="L41">    private String getURLRecipes = &quot;http://coms-3090-025.class.las.iastate.edu:8080/recipes&quot;;</span>
+
+    // Variables to hold user and search data
+    private String userID;
+    private String username;
+    private ArrayList&lt;String&gt; creatorIDList;
+    private ArrayList&lt;String&gt; searchList;
+
+    private ListView searchListView;
+    private MyCustomAdapter2 arrayAdapter;
+
+    private Button filterUsers;
+    private Button filterRecipes;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="fc" id="L58">        super.onCreate(savedInstanceState);</span>
+
+<span class="fc" id="L60">        EdgeToEdge.enable(this);</span>
+<span class="fc" id="L61">        setContentView(R.layout.search_screen);</span>
+<span class="fc" id="L62">        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.searchScreen), (v, insets) -&gt; {</span>
+<span class="fc" id="L63">            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());</span>
+<span class="fc" id="L64">            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);</span>
+<span class="fc" id="L65">            return insets;</span>
+        });
+
+<span class="fc" id="L68">        filterUsers = findViewById(R.id.filterUsers);</span>
+<span class="fc" id="L69">        filterRecipes = findViewById(R.id.filterRecipes);</span>
+
+<span class="fc" id="L71">        searchList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L72">        creatorIDList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L73">        searchListView = findViewById(R.id.searchListView);</span>
+
+<span class="fc" id="L75">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if (extras == null) {</span>
+<span class="nc" id="L77">            Toast.makeText(SearchScreen.this, &quot;Failed to get extras from intent&quot;, Toast.LENGTH_LONG).show();</span>
+        } else {
+<span class="fc" id="L79">            userID = extras.getString(&quot;USERID&quot;);</span>
+<span class="fc" id="L80">            username = extras.getString(&quot;username&quot;);</span>
+        }
+
+        // Initial request for users
+<span class="fc" id="L84">        getRequestUsers();</span>
+
+        // Set listeners for filter buttons
+<span class="fc" id="L87">        filterUsers.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L90">                searchList.clear();</span>
+<span class="fc" id="L91">                creatorIDList.clear();</span>
+<span class="fc" id="L92">                getRequestUsers();</span>
+<span class="fc" id="L93">            }</span>
+        });
+
+<span class="fc" id="L96">        filterRecipes.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L99">                searchList.clear();</span>
+<span class="fc" id="L100">                creatorIDList.clear();</span>
+<span class="fc" id="L101">                getRequestRecipes();</span>
+<span class="fc" id="L102">            }</span>
+        });
+<span class="fc" id="L104">    }</span>
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+<span class="fc" id="L109">        getMenuInflater().inflate(R.menu.menu, menu);</span>
+
+<span class="fc" id="L111">        MenuItem menuItem = menu.findItem(R.id.action_search);</span>
+<span class="fc" id="L112">        SearchView searchView = (SearchView) menuItem.getActionView();</span>
+<span class="fc" id="L113">        searchView.setQueryHint(&quot;Type here to search&quot;);</span>
+
+<span class="fc" id="L115">        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {</span>
+
+            @Override
+            public boolean onQueryTextSubmit(String newText) {
+
+<span class="nc" id="L120">                arrayAdapter.getFilter().filter(newText);</span>
+
+<span class="nc" id="L122">                return true;</span>
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+<span class="nc" id="L128">                arrayAdapter.getFilter().filter(newText);</span>
+
+<span class="nc" id="L130">                return true;</span>
+            }
+        });
+
+<span class="fc" id="L134">        return super.onCreateOptionsMenu(menu);</span>
+    }
+
+    /**
+     * Sends a GET request to retrieve a list of users from the server and updates the ListView with the retrieved data.
+     */
+    private void getRequestUsers() {
+<span class="fc" id="L141">        JsonArrayRequest jsonObjReq = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                getURLUsers,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L145">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="fc bfc" id="L148" title="All 2 branches covered.">                        for(int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="fc" id="L150">                                JSONObject curObj = response.getJSONObject(i);</span>
+<span class="fc" id="L151">                                String username = curObj.getString(&quot;username&quot;);</span>
+<span class="fc" id="L152">                                String creatorID = curObj.getString(&quot;id&quot;);</span>
+<span class="fc" id="L153">                                searchList.add(username);</span>
+<span class="fc" id="L154">                                creatorIDList.add(creatorID);</span>
+<span class="nc" id="L155">                            } catch (JSONException e) {</span>
+<span class="nc" id="L156">                                throw new RuntimeException(e);</span>
+<span class="fc" id="L157">                            }</span>
+                        }
+<span class="fc" id="L159">                        arrayAdapter = new MyCustomAdapter2(searchList, creatorIDList,&quot;User&quot;,SearchScreen.this);</span>
+<span class="fc" id="L160">                        searchListView.setAdapter(arrayAdapter);</span>
+<span class="fc" id="L161">                    }</span>
+                },
+<span class="fc" id="L163">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L166">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L167">                    }</span>
+                }
+<span class="fc" id="L169">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L172">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L175">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L180">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L183">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L188">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L189">    }</span>
+
+    /**
+     * Sends a GET request to retrieve a list of recipes from the server and updates the ListView with the retrieved data.
+     */
+    private void getRequestRecipes() {
+<span class="fc" id="L195">        JsonArrayRequest jsonObjReq = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                getURLRecipes,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L199">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="fc" id="L202">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                        for(int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="fc" id="L205">                                JSONObject curObj = response.getJSONObject(i);</span>
+<span class="fc" id="L206">                                String recipeName = curObj.getString(&quot;name&quot;);</span>
+<span class="fc" id="L207">                                String creatorID = curObj.getString(&quot;id&quot;);</span>
+<span class="fc" id="L208">                                creatorIDList.add(creatorID);</span>
+<span class="fc" id="L209">                                searchList.add(recipeName);</span>
+<span class="nc" id="L210">                            } catch (JSONException e) {</span>
+<span class="nc" id="L211">                                throw new RuntimeException(e);</span>
+<span class="fc" id="L212">                            }</span>
+                        }
+<span class="fc" id="L214">                        arrayAdapter = new MyCustomAdapter2(searchList, creatorIDList,&quot;Recipe&quot;,SearchScreen.this);</span>
+<span class="fc" id="L215">                        searchListView.setAdapter(arrayAdapter);</span>
+<span class="fc" id="L216">                    }</span>
+                },
+<span class="fc" id="L218">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L221">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L222">                    }</span>
+                }
+<span class="fc" id="L224">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L227">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L230">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L235">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L238">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L243">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L244">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

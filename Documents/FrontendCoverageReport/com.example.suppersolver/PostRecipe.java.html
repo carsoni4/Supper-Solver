@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PostRecipe.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">PostRecipe.java</span></div><h1>PostRecipe.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * User can post a recipe by providing a name, description, and image URL.
+ */
+<span class="fc" id="L32">public class PostRecipe extends AppCompatActivity {</span>
+    private static final String userUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users/&quot;;
+    private static final String recipeUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/recipe&quot;;
+    private static final String imageUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/image/link&quot;;
+    private String userID, username;
+    private EditText name, description, imageSource;
+    private Button postRecipeBtn, backButton;
+    private TextView id;
+    private int recipeID;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L44">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L45">        setContentView(R.layout.post_recipe);</span>
+
+<span class="fc" id="L47">        name = findViewById(R.id.edit_name);</span>
+<span class="fc" id="L48">        description = findViewById(R.id.edit_description);</span>
+<span class="fc" id="L49">        postRecipeBtn = findViewById(R.id.post_recipe_btn);</span>
+<span class="fc" id="L50">        id = findViewById(R.id.useridpost);</span>
+<span class="fc" id="L51">        imageSource = findViewById(R.id.edit_image_url);</span>
+<span class="fc" id="L52">        backButton = findViewById(R.id.back_button);</span>
+
+<span class="fc" id="L54">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (extras == null) {</span>
+<span class="nc" id="L56">            Toast.makeText(PostRecipe.this, &quot;cannot find user&quot;, Toast.LENGTH_SHORT).show();</span>
+        } else {
+<span class="fc" id="L58">            userID = extras.getString(&quot;USERID&quot;);</span>
+<span class="fc" id="L59">            username = extras.getString(&quot;username&quot;);</span>
+        }
+<span class="fc" id="L61">        id.setText(userID);</span>
+
+<span class="fc" id="L63">        backButton.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="nc" id="L65">                Intent intent = new Intent(PostRecipe.this, HomeFeed.class);</span>
+<span class="nc" id="L66">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="nc" id="L67">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="nc" id="L68">                startActivity(intent);</span>
+<span class="nc" id="L69">            }</span>
+        });
+
+<span class="fc" id="L72">        postRecipeBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L75">                String imgsrc = imageSource.getText().toString();</span>
+<span class="nc" id="L76">                String rname = name.getText().toString();</span>
+<span class="nc" id="L77">                String rdesc = description.getText().toString();</span>
+<span class="nc bnc" id="L78" title="All 6 branches missed.">                if(imgsrc.isEmpty() || rname.isEmpty() || rdesc.isEmpty()) {</span>
+<span class="nc" id="L79">                    Toast.makeText(PostRecipe.this, &quot;please fill all fields&quot;, Toast.LENGTH_SHORT).show();</span>
+                }else{
+<span class="nc" id="L81">                    postRequest();</span>
+                }
+<span class="nc" id="L83">            }</span>
+        });
+<span class="fc" id="L85">    }</span>
+
+    private void getRequest(String path) {
+<span class="nc" id="L88">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.GET,
+                userUrl + path,
+                null, // Pass null as the request body since it's a GET request
+<span class="nc" id="L92">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+<span class="nc" id="L96">                    }</span>
+                },
+<span class="nc" id="L98">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L101">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L102">                    }</span>
+                }
+<span class="nc" id="L104">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L107">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L110">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L115">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L118">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L123">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="nc" id="L124">    }</span>
+
+    private void postRequest() {
+
+<span class="nc" id="L128">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="nc" id="L130">                postBody.put(&quot;description&quot;, description.getText().toString());</span>
+<span class="nc" id="L131">                postBody.put(&quot;name&quot;, name.getText().toString());</span>
+<span class="nc" id="L132">                postBody.put(&quot;userID&quot;, Integer.parseInt(userID));</span>
+<span class="nc" id="L133">        } catch (Exception e){</span>
+<span class="nc" id="L134">            e.printStackTrace();</span>
+<span class="nc" id="L135">        }</span>
+
+<span class="nc" id="L137">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                recipeUrl,
+                postBody,
+<span class="nc" id="L141">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L144">                            id.setText(response.toString());</span>
+                            try {
+<span class="nc" id="L146">                                recipeID = response.getInt(&quot;id&quot;);</span>
+<span class="nc" id="L147">                            } catch (JSONException e) {</span>
+<span class="nc" id="L148">                                throw new RuntimeException(e);</span>
+<span class="nc" id="L149">                            }</span>
+<span class="nc" id="L150">                            postImage();</span>
+<span class="nc" id="L151">                    }</span>
+                },
+<span class="nc" id="L153">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L156">                    }</span>
+                }
+<span class="nc" id="L158">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L161">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L164">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L169">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L172">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L177">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L178">    }</span>
+
+    private void postImage() {
+
+<span class="nc" id="L182">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="nc" id="L184">                String imagesource = imageSource.getText().toString();</span>
+<span class="nc" id="L185">                postBody.put(&quot;imgUrl&quot;, imagesource);</span>
+<span class="nc" id="L186">                postBody.put(&quot;recipeID&quot;, recipeID);</span>
+<span class="nc" id="L187">                postBody.put(&quot;imgPos&quot;, 0);</span>
+
+<span class="nc" id="L189">        } catch (Exception e){</span>
+<span class="nc" id="L190">            e.printStackTrace();</span>
+<span class="nc" id="L191">        }</span>
+
+<span class="nc" id="L193">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                imageUrl,
+                postBody,
+<span class="nc" id="L197">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L200">                        Intent intent = new Intent(PostRecipe.this, HomeFeed.class);</span>
+<span class="nc" id="L201">                        intent.putExtra(&quot;username&quot;, username);</span>
+<span class="nc" id="L202">                        intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="nc" id="L203">                        startActivity(intent);</span>
+<span class="nc" id="L204">                    }</span>
+                },
+<span class="nc" id="L206">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L209">                    }</span>
+                }
+<span class="nc" id="L211">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L214">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L217">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L222">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L225">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L230">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L231">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

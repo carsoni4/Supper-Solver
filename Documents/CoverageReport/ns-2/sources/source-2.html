@@ -1,0 +1,278 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CommentController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: CommentController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommentController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.5%
+  </span>
+  <span class="absValue">
+    (5/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    8.3%
+  </span>
+  <span class="absValue">
+    (2/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    37%
+  </span>
+  <span class="absValue">
+    (17/46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;
+&nbsp;import supperSolver.DataTransferObjects.CommentDTO;
+&nbsp;import supperSolver.Models.MComment;
+&nbsp;import supperSolver.Repositories.RComment;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;import supperSolver.Repositories.RRecipe;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class CommentController</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    private RComment rComment;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RUser rUser;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RRecipe rRecipe;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a comment by its ID&quot;)
+&nbsp;    @GetMapping(&quot;/comments/{id}&quot;)
+&nbsp;    public MComment getCommentByID(@PathVariable(&quot;id&quot;) int id)
+&nbsp;    {
+<b class="fc">&nbsp;        return rComment.findById(id).get();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Creates a new comment&quot;)
+&nbsp;    @PostMapping(&quot;/comments&quot;)
+&nbsp;    public MComment createComment(@RequestBody CommentDTO comment)
+&nbsp;    {
+<b class="fc">&nbsp;        MComment newComment = new MComment();</b>
+&nbsp;
+<b class="fc">&nbsp;        newComment.setUser(rUser.findById(comment.getUserID()).get());</b>
+<b class="fc">&nbsp;        newComment.setRecipe(rRecipe.findById(comment.getRecipeID()).get());</b>
+<b class="fc">&nbsp;        newComment.setComment(comment.getComment());</b>
+&nbsp;
+<b class="fc">&nbsp;        return rComment.save(newComment);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets specific comment by userID, recipeID, and comment string&quot;)
+&nbsp;    @GetMapping(&quot;/comments/getSpecific/{userID}/{recipeID}/{commentString}&quot;)
+&nbsp;    public String getSpecificCommentID(@PathVariable int userID, @PathVariable int recipeID, @PathVariable String commentString)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MComment&gt; allRecipeComments = findCommentByRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        for(MComment c : allRecipeComments){</b>
+<b class="nc">&nbsp;            if((c.getUser().getID() == userID) &amp;&amp; (c.getComment().equals(commentString))){</b>
+<b class="nc">&nbsp;                return String.valueOf(c.getID());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        //if the comment is not found returns 0
+<b class="nc">&nbsp;        return String.valueOf(0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets all comments by a user&quot;)
+&nbsp;    @GetMapping(&quot;/comments/byUser/{userID}&quot;)
+&nbsp;    public List&lt;MComment&gt; findCommentByUserID(@PathVariable int userID){
+<b class="nc">&nbsp;        return rComment.findByUserID(userID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets all comments by a recipe&quot;)
+&nbsp;    @GetMapping(&quot;/comments/byRecipe/{recipeID}&quot;)
+&nbsp;    public List&lt;MComment&gt; findCommentByRecipeID(@PathVariable int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rComment.findByRecipeID(recipeID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a list of all comment&#39;s words of a recipe&quot;)
+&nbsp;    @GetMapping(&quot;/comments/strings/{recipeID}&quot;)
+&nbsp;    public ArrayList&lt;String&gt; findCommentString(@PathVariable int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MComment&gt; listOfComments = rComment.findByRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        ArrayList&lt;String&gt; finalCommentList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(MComment c : listOfComments){</b>
+<b class="nc">&nbsp;            finalCommentList.add(c.comment);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return finalCommentList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a list of all comment&#39;s words of a user&quot;)
+&nbsp;    @GetMapping(&quot;/comments/userIDs/{recipeID}&quot;)
+&nbsp;    public ArrayList&lt;String&gt; findUserIDString(@PathVariable int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MComment&gt; listOfComments = rComment.findByRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        ArrayList&lt;String&gt; finalUserIDList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(MComment c : listOfComments){</b>
+<b class="nc">&nbsp;            finalUserIDList.add(String.valueOf(c.user.getID()));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return finalUserIDList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a list of the usernames of comments made on a recipe&quot;)
+&nbsp;    @GetMapping(&quot;/comments/usernames/{recipeID}&quot;)
+&nbsp;    public ArrayList&lt;String&gt; findUsernameString(@PathVariable int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MComment&gt; listOfComments = rComment.findByRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        ArrayList&lt;String&gt; finalUsernameList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for(MComment c : listOfComments){</b>
+<b class="nc">&nbsp;            finalUsernameList.add(c.user.getUsername());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return finalUsernameList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Updates a comment&quot;)
+&nbsp;    @PutMapping(&quot;/comments/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;MComment&gt; updateComment(@PathVariable(&quot;id&quot;) int id, @RequestBody CommentDTO comment)
+&nbsp;    {
+<b class="pc">&nbsp;        if(rComment.findById(id).isPresent()) {</b>
+<b class="fc">&nbsp;            MComment existingComment = rComment.findById(id).get();</b>
+&nbsp;
+<b class="fc">&nbsp;            existingComment.setRecipe(rRecipe.findById(comment.getRecipeID()).get());</b>
+<b class="fc">&nbsp;            existingComment.setUser(rUser.findById(comment.getUserID()).get());</b>
+<b class="fc">&nbsp;            existingComment.setComment(comment.getComment());</b>
+&nbsp;
+<b class="fc">&nbsp;            rComment.save(existingComment);</b>
+<b class="fc">&nbsp;            return ResponseEntity.ok(existingComment);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;Comment does not exist&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes comment by its unique ID&quot;)
+&nbsp;    @DeleteMapping(&quot;/comments/{id}&quot;)
+&nbsp;    public void deleteComment(@PathVariable(&quot;id&quot;) int id)
+&nbsp;    {
+<b class="fc">&nbsp;        Optional&lt;MComment&gt; comment = rComment.findById(id);</b>
+<b class="pc">&nbsp;        if (comment.isPresent())</b>
+<b class="fc">&nbsp;            rComment.deleteById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes comments by userID&quot;)
+&nbsp;    @DeleteMapping(&quot;/comments/userID/{userID}&quot;)
+&nbsp;    public void deleteCommentsByUser(@PathVariable(&quot;userID&quot;) int userID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MComment&gt; comments = rComment.findByUserID(userID);</b>
+<b class="nc">&nbsp;        if (comments != null &amp;&amp; !comments.isEmpty())</b>
+<b class="nc">&nbsp;            rComment.deleteAll(comments);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes comments by recipeID&quot;)
+&nbsp;    @DeleteMapping(&quot;/comments/recipeID/{recipeID}&quot;)
+&nbsp;    public void deleteCommentsByRecipe(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MComment&gt; comments = rComment.findByRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        if (comments != null &amp;&amp; !comments.isEmpty())</b>
+<b class="nc">&nbsp;            rComment.deleteAll(comments);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-13 16:19</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/adminHomeScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <LinearLayout
+            android:id="@+id/linearLayout11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.490"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0500">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rectangle"
+                android:fontFamily="serif-monospace"
+                android:gravity="center"
+                android:text="Admin Home"
+                android:textColor="#000000"
+                android:textSize="28dp"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:layout_width="248dp"
+                android:layout_height="55dp"
+                android:fontFamily="serif-monospace"
+                android:gravity="center"
+                android:text="Search for users and\nrecipes to delete."
+                android:textColor="#000000"
+                android:textSize="16dp"
+                android:textStyle="bold"></TextView>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/commentUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="52dp"
+            android:layout_marginTop="180dp"
+            android:fontFamily="serif-monospace"
+            android:text="Filter:"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/LinearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2450"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/commentUser">
+
+            <Button
+                android:id="@+id/filterUsers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:text="Users"
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:textStyle="bold"></Button>
+
+            <Button
+                android:id="@+id/filterRecipes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:text="Recipes"
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:textStyle="bold"></Button>
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/searchListView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/LinearLayout1"></ListView>
+
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#f5ee9e"
+            android:fontFamily="serif-monospace"
+            android:text="Logout"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.970"
+            app:layout_constraintHorizontal_bias="0.1"></Button>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > IngredientController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: IngredientController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IngredientController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70%
+  </span>
+  <span class="absValue">
+    (7/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15%
+  </span>
+  <span class="absValue">
+    (3/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55%
+  </span>
+  <span class="absValue">
+    (22/40)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.http.server.DelegatingServerHttpResponse;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.ResponseBody;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import supperSolver.Models.MComment;
+&nbsp;import supperSolver.Models.MIngredient;
+&nbsp;import supperSolver.Models.MUser;
+&nbsp;import supperSolver.Repositories.RIngredient;
+&nbsp;import supperSolver.Repositories.RRecipe;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;import supperSolver.Repositories.RIngredient;
+&nbsp;import supperSolver.DataTransferObjects.IngredientDTO;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class IngredientController</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    RIngredient rIngredient;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    RUser rUser;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    RRecipe rRecipe;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private GroupController groupController;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets ingredients by groupID&quot;)
+&nbsp;    @GetMapping(&quot;ingredients/groupID/{groupID}&quot;)
+&nbsp;    public List&lt;MIngredient&gt; GetIngredientsByGroup(@PathVariable int groupID)
+&nbsp;    {
+<b class="nc">&nbsp;        Map&lt;String, MIngredient&gt; ingredientMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        List&lt;MUser&gt; users = groupController.getGroupUsers(groupID);</b>
+&nbsp;
+<b class="nc">&nbsp;        for (MUser user : users)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            List&lt;MIngredient&gt; userIngredients = GetIngredientsByUser(user.getID());</b>
+&nbsp;
+<b class="nc">&nbsp;            for (MIngredient ingredient : userIngredients)</b>
+&nbsp;            {
+<b class="nc">&nbsp;                if (ingredientMap.containsKey(ingredient.getName()))</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    MIngredient existingIngredient = ingredientMap.get(ingredient.getName());</b>
+<b class="nc">&nbsp;                    existingIngredient.setQuantity(existingIngredient.getQuantity() + ingredient.getQuantity());</b>
+&nbsp;                }
+&nbsp;                else
+&nbsp;                {
+<b class="nc">&nbsp;                    ingredientMap.put(ingredient.getName(), ingredient);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return new ArrayList&lt;&gt;(ingredientMap.values());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets list of ingredients based on userID&quot;)
+&nbsp;    @GetMapping(&quot;/ingredients/user/{userID}&quot;)
+&nbsp;    public List&lt;MIngredient&gt; GetIngredientsByUser(@PathVariable int userID)
+&nbsp;    {
+<b class="fc">&nbsp;        return rIngredient.findByUserID(userID).get();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets list of ingredients based on RecipeID&quot;)
+&nbsp;    @GetMapping(&quot;/ingredients/recipe/{recipeID}&quot;)
+&nbsp;    public List&lt;MIngredient&gt; GetIngredientsByRecipe(@PathVariable int recipeID)
+&nbsp;    {
+<b class="fc">&nbsp;        return rIngredient.findByRecipeID(recipeID).get();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a single ingredient by its unique ID&quot;)
+&nbsp;    @GetMapping(&quot;/ingredients/{id}&quot;)
+&nbsp;    public MIngredient GetIngredientByID(@PathVariable(&quot;id&quot;) int id)
+&nbsp;    {
+<b class="fc">&nbsp;        return rIngredient.findById(id).get();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Creates a new ingredient object on Post&quot;)
+&nbsp;    @PostMapping(&quot;/ingredients&quot;)
+&nbsp;    public MIngredient CreateIngredient(@RequestBody IngredientDTO ingredient)
+&nbsp;    {
+<b class="fc">&nbsp;        MIngredient newIngredient = new MIngredient();</b>
+&nbsp;
+<b class="pc">&nbsp;        if(ingredient.getUserID() == -1)</b>
+<b class="nc">&nbsp;            newIngredient.setUser(null);</b>
+&nbsp;        else
+<b class="fc">&nbsp;            newIngredient.setUser(rUser.findById(ingredient.getUserID()).get());</b>
+&nbsp;
+<b class="pc">&nbsp;        if(ingredient.getRecipeID() == -1)</b>
+<b class="nc">&nbsp;            newIngredient.setRecipe(null);</b>
+&nbsp;        else
+<b class="fc">&nbsp;            newIngredient.setRecipe(rRecipe.findById(ingredient.getRecipeID()).get());</b>
+&nbsp;
+<b class="fc">&nbsp;        newIngredient.setName(ingredient.getName());</b>
+<b class="fc">&nbsp;        newIngredient.setQuantity(ingredient.getQuantity());</b>
+&nbsp;        
+<b class="fc">&nbsp;        return rIngredient.save(newIngredient);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Updates an existing ingredient object&quot;)
+&nbsp;    @PutMapping(&quot;/ingredients/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;MIngredient&gt; UpdateIngredient(@PathVariable(&quot;id&quot;) int id, @RequestBody MIngredient ingredient)
+&nbsp;    {
+<b class="fc">&nbsp;        MIngredient existingIngredient = rIngredient.findById(id).get();</b>
+&nbsp;
+<b class="fc">&nbsp;        existingIngredient.setUser(ingredient.getUser());</b>
+<b class="fc">&nbsp;        existingIngredient.setRecipe(ingredient.getRecipe());</b>
+<b class="fc">&nbsp;        existingIngredient.setName(ingredient.getName());</b>
+<b class="fc">&nbsp;        existingIngredient.setQuantity(ingredient.getQuantity());</b>
+&nbsp;
+<b class="fc">&nbsp;        rIngredient.save(existingIngredient);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(existingIngredient);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes ingredients by their unique ID&quot;)
+&nbsp;    @DeleteMapping(&quot;/ingredients/{id}&quot;)
+&nbsp;    public void DeleteIngredient(@PathVariable(&quot;id&quot;) int id)
+&nbsp;    {
+<b class="fc">&nbsp;        Optional&lt;MIngredient&gt; ingredient = rIngredient.findById(id);</b>
+<b class="pc">&nbsp;        if (ingredient.isPresent())</b>
+<b class="fc">&nbsp;            rIngredient.deleteById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes ingredients by userID&quot;)
+&nbsp;    @DeleteMapping(&quot;ingredients/userID/{userID}&quot;)
+&nbsp;    public void deleteIngredientsByUser(@PathVariable(&quot;userID&quot;) int userID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MIngredient&gt; ingredients = rIngredient.findByUserID(userID).orElse(null);</b>
+<b class="nc">&nbsp;        if (ingredients != null &amp;&amp; !ingredients.isEmpty())</b>
+<b class="nc">&nbsp;            rIngredient.deleteAll(ingredients);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes ingredients by recipeID&quot;)
+&nbsp;    @DeleteMapping(&quot;ingredients/recipeID/{recipeID}&quot;)
+&nbsp;    public void deleteIngredientsByRecipe(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MIngredient&gt; ingredients = rIngredient.findByRecipeID(recipeID).orElse(null);</b>
+<b class="nc">&nbsp;        if (ingredients != null &amp;&amp; !ingredients.isEmpty())</b>
+<b class="nc">&nbsp;            rIngredient.deleteAll(ingredients);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-13 16:19</div>
+</div>
+</body>
+</html>

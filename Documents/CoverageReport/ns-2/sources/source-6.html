@@ -1,0 +1,254 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RatingController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: RatingController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RatingController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72.7%
+  </span>
+  <span class="absValue">
+    (8/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (6/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73%
+  </span>
+  <span class="absValue">
+    (27/37)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import jakarta.persistence.EntityNotFoundException;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import supperSolver.DataTransferObjects.RatingDTO;
+&nbsp;import supperSolver.Models.MRating;
+&nbsp;import supperSolver.Repositories.RRating;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;import supperSolver.Repositories.RRecipe;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class RatingController</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    private RRating rRating;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RUser rUser;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RRecipe rRecipe;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets rating by its unique ID&quot;)
+&nbsp;    @GetMapping(path = &quot;/rating/{ID}&quot;)
+&nbsp;    public MRating GetRatingByID(@PathVariable(&quot;ID&quot;) int ID)
+&nbsp;    {
+<b class="pc">&nbsp;        if(rRating.findById(ID).isPresent())</b>
+<b class="fc">&nbsp;        return rRating.findById(ID).get();</b>
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;Rating is not there&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets list of ratings by recipeID&quot;)
+&nbsp;    @GetMapping(path = &quot;/rating/byrecipe/{recipeID}&quot;)
+&nbsp;    public List&lt;MRating&gt; GetRatingsByRecipeID(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="fc">&nbsp;        return rRating.findByRecipeID(recipeID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Returns an integer of the average rating of a given recipe&quot;)
+&nbsp;    @GetMapping(path = &quot;/rating/avg/{recipeID}&quot;)
+&nbsp;    public int avgRating(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+&nbsp;        //grabs list of all the ratings for the recipe
+<b class="fc">&nbsp;        List&lt;MRating&gt; allRatingsForRecipe = rRating.findByRecipeID(recipeID);</b>
+<b class="fc">&nbsp;        int avg = 0;</b>
+&nbsp;        //loops through and adds all the ratings
+<b class="fc">&nbsp;        for (MRating mRating : allRatingsForRecipe) {</b>
+<b class="fc">&nbsp;            avg += mRating.getRating();</b>
+&nbsp;        }
+&nbsp;        //divides by size of list to get average
+<b class="fc">&nbsp;        avg /= allRatingsForRecipe.size();</b>
+<b class="fc">&nbsp;        return avg;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a list of ratings created by a given user&quot;)
+&nbsp;    @GetMapping(path = &quot;/rating/byuserid/{userID}&quot;)
+&nbsp;    public List&lt;MRating&gt; GetRatingsByUserID(@PathVariable(&quot;userID&quot;) int userID)
+&nbsp;    {
+<b class="fc">&nbsp;        return rRating.findByUserID(userID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Has user rated recipe before&quot;)
+&nbsp;    @GetMapping(&quot;rating/{userID}/{recipeID}&quot;)
+&nbsp;    public boolean RatingBeenHad(@PathVariable(&quot;userID&quot;) int userID, @PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rRating.existsByUserIDAndRecipeID(userID, recipeID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Creates a rating object on Post&quot;)
+&nbsp;    @PostMapping(path = &quot;/rating&quot;)
+&nbsp;    public MRating CreateRating(@RequestBody RatingDTO rating)
+&nbsp;    {
+<b class="pc">&nbsp;        if(rating.getRating() &gt; 5 || rating.getRating() &lt; 0)</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Rating must be less than 5 or greater than -1&quot;);</b>
+&nbsp;        else
+&nbsp;        {
+<b class="fc">&nbsp;            MRating newRating = new MRating();</b>
+&nbsp;
+<b class="fc">&nbsp;            newRating.setRating(rating.getRating());</b>
+<b class="fc">&nbsp;            newRating.setUser(rUser.findById(rating.getUserID()).get());</b>
+<b class="fc">&nbsp;            newRating.setRecipe(rRecipe.findById(rating.getRecipeID()).get());</b>
+&nbsp;
+<b class="fc">&nbsp;            return rRating.save(newRating);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Updates an existing Rating by its Unique ID&quot;)
+&nbsp;    @PutMapping(path = &quot;/rating/{ID}&quot;)
+&nbsp;    public ResponseEntity&lt;MRating&gt; updateRating(@PathVariable int ID, @RequestBody MRating rating) {
+&nbsp;
+<b class="fc">&nbsp;        MRating existingRating = rRating.findById(ID).get();</b>
+&nbsp;
+<b class="fc">&nbsp;        existingRating.setUser(rating.getUser());</b>
+<b class="fc">&nbsp;        existingRating.setRating(rating.getRating());</b>
+<b class="fc">&nbsp;        existingRating.setRecipe(rating.getRecipe());</b>
+&nbsp;
+<b class="fc">&nbsp;        rRating.save(existingRating);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(existingRating);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes ratings by their unique ID&quot;)
+&nbsp;    @DeleteMapping(path = &quot;/rating/{ID}&quot;)
+&nbsp;    public String DeleteRating(@PathVariable int ID)
+&nbsp;    {
+<b class="fc">&nbsp;        Optional&lt;MRating&gt; rating = rRating.findById(ID);</b>
+<b class="pc">&nbsp;        if (rating.isPresent())</b>
+&nbsp;        {
+<b class="fc">&nbsp;            rRating.deleteById(ID);</b>
+<b class="fc">&nbsp;            return &quot;Rating ID: &quot; + ID + &quot; has been deleted&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return &quot;Rating ID: &quot; + ID + &quot; does not exist&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes ratings by userID&quot;)
+&nbsp;    @DeleteMapping(&quot;ratings/userID/{userID}&quot;)
+&nbsp;    public void deleteRatingsByUser(@PathVariable(&quot;userID&quot;) int userID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MRating&gt; ratings = rRating.findByUserID(userID);</b>
+<b class="nc">&nbsp;        if (ratings != null &amp;&amp; !ratings.isEmpty())</b>
+<b class="nc">&nbsp;            rRating.deleteAll(ratings);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes ratings by recipeID&quot;)
+&nbsp;    @DeleteMapping(&quot;ratings/recipeID/{recipeID}&quot;)
+&nbsp;    public void deleteRatingsByRecipe(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MRating&gt; ratings = rRating.findByRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        if (ratings != null &amp;&amp; !ratings.isEmpty())</b>
+<b class="nc">&nbsp;            rRating.deleteAll(ratings);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-13 16:19</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditProfileScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">EditProfileScreen.java</span></div><h1>EditProfileScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ *  Inputs for user to edit profile name, username, password, and bio, as well as upload a profile picture
+ */
+<span class="fc" id="L33">public class EditProfileScreen extends AppCompatActivity {</span>
+
+    private String creatorID;
+    private String userID;
+    private static final String put_url = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users/&quot;;
+    private static final String imageUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/image/link&quot;;
+
+    private EditText editName;
+    private EditText editUsername;
+    private EditText editPassword;
+    private EditText editDescription;
+    private EditText imgUrl;
+    private Button uploadImgBtn;
+    private Button editButton;
+    private Button deleteBtn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="fc" id="L52">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L53">        setContentView(R.layout.editprofile_screen);</span>
+<span class="fc" id="L54">        EdgeToEdge.enable(this);</span>
+<span class="fc" id="L55">        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.editprofile), (v, insets) -&gt; {</span>
+<span class="fc" id="L56">            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());</span>
+<span class="fc" id="L57">            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);</span>
+<span class="fc" id="L58">            return insets;</span>
+        });
+
+<span class="fc" id="L61">        editName = findViewById(R.id.edt_login_name);</span>
+<span class="fc" id="L62">        editUsername = findViewById(R.id.edt_login_username);</span>
+<span class="fc" id="L63">        editPassword = findViewById(R.id.edt_login_password);</span>
+<span class="fc" id="L64">        editDescription = findViewById(R.id.edt_description);</span>
+<span class="fc" id="L65">        editButton = findViewById(R.id.login_edt_btn);</span>
+<span class="fc" id="L66">        imgUrl = findViewById(R.id.edt_img_url);</span>
+<span class="fc" id="L67">        uploadImgBtn = findViewById(R.id.profile_pic_btn);</span>
+<span class="fc" id="L68">        deleteBtn = findViewById(R.id.delete_profile_btn);</span>
+
+<span class="fc" id="L70">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if(extras == null) {</span>
+<span class="nc" id="L72">            Toast.makeText(EditProfileScreen.this, &quot;Failed to get extras from intent&quot;, Toast.LENGTH_SHORT).show();</span>
+        } else {
+<span class="fc" id="L74">            creatorID = extras.getString(&quot;creatorID&quot;);</span>
+<span class="fc" id="L75">            userID = extras.getString(&quot;USERID&quot;);</span>
+        }
+
+<span class="fc" id="L78">        editButton.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="nc" id="L80">                String name = editName.getText().toString();</span>
+<span class="nc" id="L81">                String username = editUsername.getText().toString();</span>
+<span class="nc" id="L82">                String password = editPassword.getText().toString();</span>
+<span class="nc" id="L83">                String description = editDescription.getText().toString();</span>
+
+<span class="nc bnc" id="L85" title="All 6 branches missed.">                if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {</span>
+                    // Show error message
+<span class="nc" id="L87">                    Toast.makeText(EditProfileScreen.this, userID, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L88">                    return;</span>
+                }
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                if (creatorID!=null) {</span>
+<span class="nc" id="L92">                    putRequest(creatorID);</span>
+                } else {
+<span class="nc" id="L94">                    putRequest(userID);</span>
+                }
+
+<span class="nc" id="L97">                Intent intent = new Intent(EditProfileScreen.this, ProfileScreen.class);</span>
+<span class="nc" id="L98">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="nc" id="L99">                intent.putExtra(&quot;description&quot;, description);</span>
+<span class="nc" id="L100">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="nc" id="L101">                startActivity(intent);</span>
+
+<span class="nc" id="L103">            }</span>
+        });
+
+<span class="fc" id="L106">        uploadImgBtn.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">                if(!imgUrl.getText().toString().isEmpty()) {</span>
+<span class="nc" id="L109">                    postImage();</span>
+                }
+<span class="nc" id="L111">            }</span>
+        });
+
+<span class="fc" id="L114">        deleteBtn.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L116">                deleteReq(userID);</span>
+<span class="fc" id="L117">                Intent intent = new Intent(EditProfileScreen.this, MainActivity.class);</span>
+<span class="fc" id="L118">                startActivity(intent);</span>
+<span class="fc" id="L119">            }</span>
+        });
+
+<span class="fc" id="L122">    }</span>
+
+    private void putRequest(String curID) {
+
+<span class="nc" id="L126">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="nc" id="L128">            String edtNameText = editName.getText().toString();</span>
+<span class="nc" id="L129">            String edtUsernameText = editUsername.getText().toString();</span>
+<span class="nc" id="L130">            String edtPasswordText = editPassword.getText().toString();</span>
+<span class="nc" id="L131">            String edtDescriptionText = editDescription.getText().toString();</span>
+
+<span class="nc" id="L133">            postBody.put(&quot;name&quot;, edtNameText);</span>
+<span class="nc" id="L134">            postBody.put(&quot;username&quot;, edtUsernameText);</span>
+<span class="nc" id="L135">            postBody.put(&quot;password&quot;, edtPasswordText);</span>
+<span class="nc" id="L136">            postBody.put(&quot;bio&quot;, edtDescriptionText);</span>
+<span class="nc" id="L137">        } catch (Exception e){</span>
+<span class="nc" id="L138">            e.printStackTrace();</span>
+<span class="nc" id="L139">        }</span>
+
+<span class="nc" id="L141">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.PUT,
+                put_url + curID,
+                postBody,
+<span class="nc" id="L145">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+<span class="nc" id="L149">                            String newDescription = response.getString(&quot;bio&quot;);</span>
+<span class="nc" id="L150">                            Toast.makeText(EditProfileScreen.this, newDescription, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L151">                        } catch (Exception e) {</span>
+<span class="nc" id="L152">                            Log.e(&quot;JSON Parsing Error&quot;, e.toString());</span>
+<span class="nc" id="L153">                        }</span>
+<span class="nc" id="L154">                    }</span>
+                },
+<span class="nc" id="L156">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L159">                        Toast.makeText(EditProfileScreen.this, error.getMessage(), Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L160">                    }</span>
+                }
+<span class="nc" id="L162">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L165">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L168">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L173">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L176">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L181">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L182">    }</span>
+
+    private void postImage() {
+
+<span class="nc" id="L186">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="nc" id="L188">            postBody.put(&quot;imgUrl&quot;, imgUrl.getText().toString());</span>
+<span class="nc" id="L189">            postBody.put(&quot;recipeID&quot;, 0);</span>
+<span class="nc" id="L190">            postBody.put(&quot;userID&quot;, userID);</span>
+
+<span class="nc" id="L192">        } catch (Exception e){</span>
+<span class="nc" id="L193">            e.printStackTrace();</span>
+<span class="nc" id="L194">        }</span>
+
+<span class="nc" id="L196">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                imageUrl,
+                postBody,
+<span class="nc" id="L200">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+<span class="nc" id="L204">                    }</span>
+                },
+<span class="nc" id="L206">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L209">                    }</span>
+                }
+<span class="nc" id="L211">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L214">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L217">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L222">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L225">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L230">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="nc" id="L231">    }</span>
+
+    private void deleteReq(String id) {
+<span class="fc" id="L234">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.DELETE,
+                put_url + id,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L238">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+<span class="nc" id="L242">                    }</span>
+                },
+<span class="fc" id="L244">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L247">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L248">                    }</span>
+                }
+<span class="fc" id="L250">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L253">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L256">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L261">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L264">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L269">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L270">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

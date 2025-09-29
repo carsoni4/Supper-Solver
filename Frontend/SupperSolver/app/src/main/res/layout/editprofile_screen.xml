@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editprofile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.225">
+
+    <TextView
+        android:id="@+id/welcomeMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rectangle"
+        android:gravity="center"
+        android:text="Edit Profile"
+        android:textColor="#000000"
+        android:fontFamily="serif-monospace"
+        android:textSize="25dp"
+        android:textStyle="bold"></TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.325">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Name: "
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/edt_login_name"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:hint="Enter Name Here"
+            android:inputType="text"
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textColorHint="#000000"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.400">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Username: "
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/edt_login_username"
+            android:layout_width="210dp"
+            android:layout_height="50dp"
+            android:hint="Enter Username Here"
+            android:inputType="text"
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textColorHint="#000000"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.475">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Password: "
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/edt_login_password"
+            android:layout_width="210dp"
+            android:layout_height="50dp"
+            android:hint="Enter Password Here"
+            android:inputType="text"
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textColorHint="#000000"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.550">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Description: "
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/edt_description"
+            android:layout_width="190dp"
+            android:layout_height="50dp"
+            android:hint="Enter Description Here"
+            android:inputType="text"
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textColorHint="#000000"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutimg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.441"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.756">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile Pic URL: "
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/edt_img_url"
+            android:layout_width="160dp"
+            android:layout_height="50dp"
+            android:hint="Enter URL here"
+            android:inputType="text"
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:textColorHint="#000000"></EditText>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/login_edt_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#f5ee9e"
+        android:text="Edit"
+        android:textColor="#000000"
+        android:fontFamily="serif-monospace"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintVertical_bias="0.175"></Button>
+
+    <Button
+        android:id="@+id/profile_pic_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Profile Pic"
+        android:backgroundTint="#f5ee9e"
+        android:textColor="#000000"
+        android:fontFamily="serif-monospace"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintVertical_bias="0.64"></Button>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.542"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976">
+
+        <Button
+            android:id="@+id/editprofile_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="75dp"
+            android:backgroundTint="#f5ee9e"
+            android:textColor="#000000"
+            android:fontFamily="serif-monospace"
+            android:text="Back"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.063"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+            app:layout_constraintVertical_bias="0.948"></Button>
+
+        <Button
+            android:id="@+id/delete_profile_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_weight="1"
+            android:backgroundTint="#801A0E"
+            android:text="DELETE PROFILE"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.893"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

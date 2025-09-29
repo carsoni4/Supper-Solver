@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.100">
+
+        <TextView
+            android:id="@+id/welcomeMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/rectangle"
+            android:gravity="center"
+            android:text="Welcome"
+            android:textColor="#fcfec3"
+            android:textSize="25dp"
+            android:textStyle="bold"></TextView>
+
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="match_parent"
+            android:layout_height="122dp"
+            android:layout_marginBottom="150dp"
+            android:gravity="center"
+            android:src="@drawable/blankprofilepicture" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.900">
+
+        <Button
+            android:id="@+id/viewRecipes"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:layout_marginRight="10dp"
+            android:text="View Recipes"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"></Button>
+
+        <Button
+            android:id="@+id/editProfile"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:text="Edit Profile"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"></Button>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/rectangle"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.400">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="About me: "
+            android:textColor="#fcfec3"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="304dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Example profile description describing me and the recipes that I make."
+            android:textColor="#EDA071"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.490"
+        app:layout_constraintVertical_bias="0.525">
+
+        <Button
+            android:id="@+id/viewFriends"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:layout_marginRight="10dp"
+            android:text="Friends"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"></Button>
+
+        <Button
+            android:id="@+id/viewMessages"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:text="Messages"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"></Button>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FriendScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">FriendScreen.java</span></div><h1>FriendScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+
+/**
+ * Variable length list showing all of the user's friends
+ */
+<span class="fc" id="L34">public class FriendScreen extends AppCompatActivity {</span>
+
+<span class="fc" id="L36">    private String getURL = &quot;http://coms-3090-025.class.las.iastate.edu:8080/users/getFriends/&quot;;</span>
+
+    private TextView tvResponse;
+    private String userID;
+    private String curUsername;
+    private ArrayList&lt;String&gt; friendsArray;
+
+    private ListView friendsList;
+
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="fc" id="L47">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L48">        setContentView(R.layout.friend_screen);</span>
+<span class="fc" id="L49">        EdgeToEdge.enable(this);</span>
+<span class="fc" id="L50">        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.friendScreen), (v, insets) -&gt; {</span>
+<span class="fc" id="L51">            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());</span>
+<span class="fc" id="L52">            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);</span>
+<span class="fc" id="L53">            return insets;</span>
+        });
+
+<span class="fc" id="L56">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if(extras == null) {</span>
+<span class="nc" id="L58">            Toast.makeText(FriendScreen.this, &quot;Failed to get extras from intent&quot;, Toast.LENGTH_LONG).show();</span>
+        } else {
+<span class="fc" id="L60">            curUsername = extras.getString(&quot;username&quot;);</span>
+<span class="fc" id="L61">            userID = extras.getString(&quot;USERID&quot;);</span>
+        }
+
+<span class="fc" id="L64">        tvResponse = findViewById(R.id.tvResponse);</span>
+<span class="fc" id="L65">        friendsList = findViewById(R.id.friendsList);</span>
+<span class="fc" id="L66">        friendsArray = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L68">        getRequest();</span>
+
+<span class="fc" id="L70">        Log.d(&quot;array&quot;, String.valueOf(friendsArray));</span>
+<span class="fc" id="L71">    }</span>
+
+    private void getRequest() {
+<span class="fc" id="L74">        JsonArrayRequest jsonObjReq = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                getURL + userID,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L78">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="fc" id="L81">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                        for(int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="fc" id="L84">                                JSONObject curObj = response.getJSONObject(i);</span>
+<span class="fc" id="L85">                                String curUser = curObj.getString(&quot;username&quot;);</span>
+<span class="fc" id="L86">                                friendsArray.add(curUser);</span>
+<span class="nc" id="L87">                            } catch (JSONException e) {</span>
+<span class="nc" id="L88">                                throw new RuntimeException(e);</span>
+<span class="fc" id="L89">                            }</span>
+                        }
+<span class="fc" id="L91">                        Log.d(&quot;Array&quot;, String.valueOf(friendsArray));</span>
+<span class="fc" id="L92">                        friendsList.setAdapter(new MyCustomAdapter(friendsArray, FriendScreen.this));</span>
+<span class="fc" id="L93">                    }</span>
+                },
+<span class="fc" id="L95">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L98">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L99">                    }</span>
+                }
+<span class="fc" id="L101">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L104">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L107">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L112">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L115">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L120">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L121">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

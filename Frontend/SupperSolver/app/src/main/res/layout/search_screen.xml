@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/searchScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#f5ee9e"
+            android:fontFamily="serif-monospace"
+            android:text="Back"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></Button>
+
+        <TextView
+            android:id="@+id/filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="56dp"
+            android:layout_marginTop="50dp"
+            android:text="Filter:"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:fontFamily="serif-monospace"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/searchListView"
+            app:layout_constraintEnd_toEndOf="@id/searchListView"
+            app:layout_constraintHorizontal_bias="0.2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/filter"
+            app:layout_constraintVertical_bias="0.0">
+
+            <Button
+                android:id="@+id/filterUsers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="#f5ee9e"
+                android:text="Users"
+                android:textColor="#000000"
+                android:fontFamily="serif-monospace"
+                android:textSize="16dp"
+                android:textStyle="bold"></Button>
+
+            <Button
+                android:id="@+id/filterRecipes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:text="Recipes"
+                android:textColor="#000000"
+                android:textSize="16dp"
+                android:fontFamily="serif-monospace"
+                android:textStyle="bold"></Button>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/searchListView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="125dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></ListView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

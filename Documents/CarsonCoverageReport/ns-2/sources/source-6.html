@@ -1,0 +1,296 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RecipeController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: RecipeController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecipeController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+&nbsp;import supperSolver.Models.MRating;
+&nbsp;import supperSolver.Models.MRecipe;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.ResponseBody;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import supperSolver.Models.MUser;
+&nbsp;import supperSolver.Repositories.RRating;
+&nbsp;import supperSolver.Repositories.RRecipe;
+&nbsp;import supperSolver.DataTransferObjects.RecipeDTO;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@RestController
+<b class="nc">&nbsp;public class RecipeController</b>
+&nbsp;{
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RRating rRating;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RRecipe rRecipe;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RUser rUser;
+&nbsp;
+&nbsp;    // Algorithm that gets 6 recipes based off the ingredients the user has
+&nbsp;    public MRecipe recipeAlgorithm(int userID, List&lt;MRecipe&gt; recipeArray)
+&nbsp;    {
+<b class="nc">&nbsp;        MUser mUser = rUser.findById(userID).get();</b>
+<b class="nc">&nbsp;        List&lt;Integer&gt; recipeIDs = rRecipe.algorithm(mUser);</b>
+&nbsp;
+&nbsp;        // First try to fill the array with 6 recipes based on the algorithm
+<b class="nc">&nbsp;        for (Integer recipeID : recipeIDs)</b>
+&nbsp;        {
+&nbsp;            // Ensure the recipe isn&#39;t already in recipeArray
+<b class="nc">&nbsp;            Optional&lt;MRecipe&gt; recipeOpt = getRecipe(recipeID);</b>
+<b class="nc">&nbsp;            if (recipeOpt.isPresent())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                MRecipe newRecipe = recipeOpt.get();</b>
+<b class="nc">&nbsp;                boolean isDuplicate = recipeArray.stream().anyMatch(r -&gt; r.getID() == newRecipe.getID());</b>
+&nbsp;
+<b class="nc">&nbsp;                if (!isDuplicate)</b>
+<b class="nc">&nbsp;                    return rRecipe.findById(recipeID).get();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // If we still need more recipes, add some random ones from the database
+<b class="nc">&nbsp;        List&lt;MRecipe&gt; randomRecipes = rRecipe.findAll();</b>
+<b class="nc">&nbsp;        for (MRecipe randomRecipe : randomRecipes)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            boolean isDuplicate = recipeArray.stream().anyMatch(r -&gt; r.getID() == randomRecipe.getID());</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!isDuplicate)</b>
+<b class="nc">&nbsp;                return randomRecipe;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Get recipe by userID
+&nbsp;    @Operation(summary = &quot;Gets List of Recipes created by a given User&quot;)
+&nbsp;    @GetMapping(&quot;/recipe/usr/{userID}&quot;)
+&nbsp;    public @ResponseBody List&lt;MRecipe&gt; getRecipeByUserID(@PathVariable int userID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rRecipe.findByUserID(userID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Gets all recipes
+&nbsp;    @Operation(summary = &quot;Returns a list of all recipes&quot;)
+&nbsp;    @GetMapping(&quot;recipes&quot;)
+&nbsp;    public @ResponseBody List&lt;MRecipe&gt; getAllRecipes()
+&nbsp;    {
+<b class="nc">&nbsp;        return rRecipe.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Get recipe by ID
+&nbsp;    @Operation(summary = &quot;Returns a recipe given a recipeID&quot;)
+&nbsp;    @GetMapping(&quot;/recipe/{recipeID}&quot;)
+&nbsp;    public @ResponseBody Optional&lt;MRecipe&gt; getRecipe(@PathVariable int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;       return rRecipe.findById(recipeID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Search for recipe by name
+&nbsp;    @Operation(summary = &quot;Gets a list of recipes by searching for Recipes with a name similar to the name parameter in the MySQL server&quot;)
+&nbsp;    @GetMapping(&quot;/recipe/searchByName/{name}&quot;)
+&nbsp;    public @ResponseBody List&lt;MRecipe&gt; searchForRecipeByName(@PathVariable String name)
+&nbsp;    {
+<b class="nc">&nbsp;        return rRecipe.findByNameLike(name);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Returns the search with the highest rating downto lowest in a sorted list
+&nbsp;    @Operation(summary = &quot;Gets a list of recipes by searching for Recipes with a name similar to the name parameter in the MySQL server then sorts them by average rating&quot;)
+&nbsp;    @GetMapping(&quot;/recipe/searchByAvgRating/{name}&quot;)
+&nbsp;    public @ResponseBody List&lt;MRecipe&gt; searchSortedByRating(@PathVariable String name)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MRecipe&gt; list = rRecipe.findByNameLike(name);</b>
+<b class="nc">&nbsp;        Map&lt;MRecipe, Integer&gt; recipeRatings = new HashMap&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(MRecipe m : list)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            List&lt;MRating&gt; allRatingsForRecipe = rRating.findByRecipeID(m.getID());</b>
+<b class="nc">&nbsp;            int avg = 0;</b>
+&nbsp;
+&nbsp;            //loops through and adds all the ratings
+<b class="nc">&nbsp;            if(!allRatingsForRecipe.isEmpty())</b>
+&nbsp;            {
+<b class="nc">&nbsp;                for (MRating mRating : allRatingsForRecipe)</b>
+<b class="nc">&nbsp;                    avg += mRating.getRating();</b>
+&nbsp;
+&nbsp;                //divides by size of list to get average
+<b class="nc">&nbsp;                avg /= allRatingsForRecipe.size();</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            recipeRatings.put(m, avg);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        list.sort((r1,r2) -&gt; recipeRatings.get(r2) - recipeRatings.get(r1));</b>
+&nbsp;
+<b class="nc">&nbsp;        return list;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Create recipe
+&nbsp;    @Operation(summary = &quot;Creates a new recipe object on Post&quot;)
+&nbsp;    @PostMapping(&quot;/recipe&quot;)
+&nbsp;    public @ResponseBody MRecipe createRecipe(@RequestBody RecipeDTO recipeDTO)
+&nbsp;    {
+<b class="nc">&nbsp;        MUser user = rUser.findById(recipeDTO.getUserID()).get();</b>
+&nbsp;
+<b class="nc">&nbsp;        MRecipe recipe = new MRecipe();</b>
+<b class="nc">&nbsp;        recipe.setName(recipeDTO.getName());</b>
+<b class="nc">&nbsp;        recipe.setDescription(recipeDTO.getDescription());</b>
+<b class="nc">&nbsp;        recipe.setUser(user);</b>
+&nbsp;
+<b class="nc">&nbsp;        return rRecipe.save(recipe);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Update Recipe
+&nbsp;    @Operation(summary = &quot;Updates an existing recipe by unique ID&quot;)
+&nbsp;    @PutMapping(&quot;/recipe/{recipeID}&quot;)
+&nbsp;    public MRecipe updateRecipe(@PathVariable int recipeID, @RequestBody MRecipe r)
+&nbsp;    {
+<b class="nc">&nbsp;        Optional&lt;MRecipe&gt; u = rRecipe.findById(recipeID);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (u.isPresent())</b>
+&nbsp;        {
+<b class="nc">&nbsp;            MRecipe oldR = u.get();</b>
+<b class="nc">&nbsp;            oldR.setDescription(r.getDescription());</b>
+<b class="nc">&nbsp;            oldR.setUser(r.getUser());</b>
+<b class="nc">&nbsp;            oldR.setName(r.getName());</b>
+&nbsp;
+<b class="nc">&nbsp;            return rRecipe.save(oldR);</b>
+&nbsp;        }
+&nbsp;        else
+&nbsp;        {
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Recipe ID &quot; + recipeID + &quot; not found&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Delete Recipe
+&nbsp;    @Operation(summary = &quot;Deletes a recipe by its unique ID&quot;)
+&nbsp;    @DeleteMapping(&quot;/recipe/{recipeID}&quot;)
+&nbsp;    public String deleteRecipe(@PathVariable int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        rRecipe.deleteById(recipeID);</b>
+<b class="nc">&nbsp;        return &quot;Recipe: &quot; + recipeID + &quot; has been deleted!&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 14:04</div>
+</div>
+</body>
+</html>

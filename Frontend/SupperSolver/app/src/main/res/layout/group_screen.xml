@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/groupScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#f5ee9e"
+            android:fontFamily="serif-monospace"
+            android:text="Back"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"></Button>
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0.490"
+            app:layout_constraintVertical_bias="0.100">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle"
+            android:fontFamily="serif-monospace"
+            android:gravity="center"
+            android:text="Group"
+            android:textColor="#000000"
+            android:textSize="25dp"
+            android:textStyle="bold"></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0.490"
+            app:layout_constraintVertical_bias="0.250">
+
+            <Button
+                android:id="@+id/createGroup"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:textColor="#000000"
+                android:text="Create A Group"
+                android:textSize="14sp"
+                android:textStyle="bold"></Button>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0.490"
+            app:layout_constraintVertical_bias="0.3750">
+
+            <Button
+                android:id="@+id/addToGroup_btn"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:textColor="#000000"
+                android:text="Add To Group"
+                android:textSize="14sp"
+                android:textStyle="bold"></Button>
+
+            <Button
+                android:id="@+id/groupMessage"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:textColor="#000000"
+                android:text="Messages"
+                android:textSize="14sp"
+                android:textStyle="bold"></Button>
+
+            <Button
+                android:id="@+id/groupInventory"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:textColor="#000000"
+                android:text="Inventory"
+                android:textSize="14sp"
+                android:textStyle="bold"></Button>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+            app:layout_constraintHorizontal_bias="0.490"
+            app:layout_constraintVertical_bias="0.90">
+
+            <Button
+                android:id="@+id/leaveGroup_btn"
+                android:layout_marginRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:textColor="#000000"
+                android:text="Leave Group"
+                android:textSize="12sp"
+                android:textStyle="bold"></Button>
+
+            <Button
+                android:id="@+id/deleteGroup_btn"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#f5ee9e"
+                android:fontFamily="serif-monospace"
+                android:textColor="#000000"
+                android:text="Delete Group"
+                android:textSize="12sp"
+                android:textStyle="bold"></Button>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

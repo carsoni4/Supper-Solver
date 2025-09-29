@@ -1,0 +1,166 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MImage</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Models</a>
+</div>
+
+<h1>Coverage Summary for Class: MImage (supperSolver.Models)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MImage</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Models;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;tbl_image&quot;)
+&nbsp;public class MImage
+&nbsp;{
+&nbsp;
+&nbsp;    //Auto Generate ID
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private int ID;
+&nbsp;
+&nbsp;    //Image URl
+&nbsp;    @Column(name = &quot;imgUrl&quot;)
+&nbsp;    private String imgUrl;
+&nbsp;
+&nbsp;    //Image Position in Recipe/User
+&nbsp;    @Column(name = &quot;imagePos&quot;)
+&nbsp;    private int imagePos;
+&nbsp;
+&nbsp;    //RecipeID if in a recipe (0 if otherwise)
+&nbsp;    @Column(name = &quot;recipeID&quot;)
+&nbsp;    private int recipeID;
+&nbsp;
+&nbsp;    //userID if for a user (0 if otherwise)
+&nbsp;    @Column(name = &quot;userID&quot;)
+&nbsp;    private int userID;
+&nbsp;
+&nbsp;    //Empty Constructor
+<b class="nc">&nbsp;    public MImage(){}</b>
+&nbsp;
+&nbsp;    //Constructor for MImage Object
+&nbsp;    public MImage(int ID, String imgUrl, int imagePos, int recipeID, int userID)
+<b class="nc">&nbsp;    {</b>
+<b class="nc">&nbsp;        this.ID = ID;</b>
+<b class="nc">&nbsp;        this.imagePos = imagePos;</b>
+<b class="nc">&nbsp;        this.imgUrl = imgUrl;</b>
+<b class="nc">&nbsp;        this.recipeID = recipeID;</b>
+<b class="nc">&nbsp;        this.userID = userID;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Getter for ID
+<b class="nc">&nbsp;    public int getID(){return ID;}</b>
+&nbsp;
+&nbsp;    //Getter and Setter for the Image URL
+<b class="nc">&nbsp;    public String getImgUrl() {return imgUrl;}</b>
+<b class="nc">&nbsp;    public void setImgUrl(String imgUrl) {this.imgUrl = imgUrl;}</b>
+&nbsp;
+&nbsp;    //Getter and Setter for Image Position
+<b class="nc">&nbsp;    public int getImagePos() {return imagePos;}</b>
+<b class="nc">&nbsp;    public void setImagePos(int imagePos) {this.imagePos = imagePos;}</b>
+&nbsp;
+&nbsp;    //Getter and Setter for RecipeID
+<b class="nc">&nbsp;    public int getRecipeID() {return recipeID;}</b>
+<b class="nc">&nbsp;    public void setRecipeID(int recipeID) {this.recipeID = recipeID;}</b>
+&nbsp;
+&nbsp;    //Getter and Setter for UserID
+<b class="nc">&nbsp;    public int getUserID(){return userID;}</b>
+<b class="nc">&nbsp;    public void setUserID(int userID){this.userID = userID;}</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 14:04</div>
+</div>
+</body>
+</html>

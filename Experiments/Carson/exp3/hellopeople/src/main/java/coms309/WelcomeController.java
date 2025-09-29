@@ -1,0 +1,24 @@
+package coms309;
+
+import coms309.people.PeopleController;
+import coms309.people.Person;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * Simple Hello World Controller to display the string returned
+ *
+ * @author Vivek Bengre
+ */
+
+@RestController
+class WelcomeController {
+
+    @GetMapping("/")
+    public String welcome() {
+        return "Carson is testing!";
+    }
+    //added another link
+    @GetMapping("/test/")
+    public String test() {return "This is a test!!!";};
+}

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommentScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">CommentScreen.java</span></div><h1>CommentScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * A screen for users to post and view comments for a particular recipe
+ */
+<span class="fc" id="L34">public class CommentScreen extends AppCompatActivity {</span>
+
+    private TextView msgResponse;
+    private TextView tvResponse;
+    private TextView comment1;
+    private TextView comment2;
+    private TextView comment3;
+    private TextView commentUser;
+    private EditText cmtEdt;
+    private Button cmtSend;
+    private EditText cmtEdtEdt;
+    private Button edtButton;
+    private Button deleteButton;
+
+    private static final String URL_JSON_OBJECT = &quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/&quot;;
+    private String method;
+<span class="fc" id="L50">    private String url = &quot;http://coms-3090-025.class.las.iastate.edu:8080/comments&quot;;</span>
+    private String curID;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="fc" id="L57">        super.onCreate(savedInstanceState);</span>
+
+<span class="fc" id="L59">        EdgeToEdge.enable(this);</span>
+<span class="fc" id="L60">        setContentView(R.layout.comment_screen);</span>
+<span class="fc" id="L61">        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.comment), (v, insets) -&gt; {</span>
+<span class="fc" id="L62">            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());</span>
+<span class="fc" id="L63">            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);</span>
+<span class="fc" id="L64">            return insets;</span>
+        });
+
+<span class="fc" id="L67">        msgResponse = findViewById(R.id.msgResponse);</span>
+<span class="fc" id="L68">        tvResponse = findViewById(R.id.tvResponse);</span>
+<span class="fc" id="L69">        cmtSend = findViewById(R.id.cmtSend);</span>
+<span class="fc" id="L70">        cmtEdt = findViewById(R.id.comment_edt);</span>
+<span class="fc" id="L71">        cmtEdtEdt = findViewById(R.id.comment_edt_edt);</span>
+<span class="fc" id="L72">        edtButton = findViewById(R.id.cmtEdit);</span>
+<span class="fc" id="L73">        deleteButton = findViewById(R.id.deleteButton);</span>
+
+<span class="fc" id="L75">        comment1 = findViewById(R.id.comment1);</span>
+<span class="fc" id="L76">        comment2 = findViewById(R.id.comment2);</span>
+<span class="fc" id="L77">        comment3 = findViewById(R.id.comment3);</span>
+<span class="fc" id="L78">        commentUser = findViewById(R.id.commentUser);</span>
+
+<span class="fc" id="L80">        method = &quot;POST&quot;;</span>
+
+<span class="fc" id="L82">        cmtSend.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">                if (method.equals(&quot;GET&quot;)) getRequest();</span>
+<span class="fc" id="L85">                else postRequest();</span>
+
+<span class="fc" id="L87">            }</span>
+        });
+
+<span class="fc" id="L90">        edtButton.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L92">                putRequest(curID);</span>
+<span class="fc" id="L93">            }</span>
+        });
+
+<span class="fc" id="L96">        deleteButton.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L98">                deleteRequest(curID);</span>
+<span class="fc" id="L99">                commentUser.setText(&quot;&quot;);</span>
+<span class="fc" id="L100">                deleteButton.setVisibility(View.INVISIBLE);</span>
+<span class="fc" id="L101">            }</span>
+        });
+
+
+<span class="fc" id="L105">        makeJsonObjReq(&quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/1&quot;);</span>
+<span class="fc" id="L106">        makeJsonObjReq(&quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/2&quot;);</span>
+<span class="fc" id="L107">        makeJsonObjReq(&quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/3&quot;);</span>
+
+<span class="fc" id="L109">    }</span>
+
+    /**
+     * Making json object request
+     */
+    private void makeJsonObjReq(String URL_JSON_OBJECT) {
+<span class="fc" id="L115">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.GET,
+                URL_JSON_OBJECT,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L119">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="fc" id="L122">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+                        try {
+                            // Assuming the response JSON has a key &quot;comment&quot;
+<span class="fc" id="L125">                            String comment = response.getString(&quot;comment&quot;);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">                            if (URL_JSON_OBJECT.equals(&quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/1&quot;)) {</span>
+<span class="fc" id="L127">                                comment1.setText(comment);</span>
+                            }
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">                            if (URL_JSON_OBJECT.equals(&quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/2&quot;)) {</span>
+<span class="nc" id="L130">                                comment2.setText(comment);</span>
+                            }
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">                            if (URL_JSON_OBJECT.equals(&quot;http://coms-3090-025.class.las.iastate.edu:8080/comments/3&quot;)) {</span>
+<span class="nc" id="L133">                                comment3.setText(comment);</span>
+                            }
+<span class="nc" id="L135">                        } catch (Exception e) {</span>
+<span class="nc" id="L136">                            Log.e(&quot;JSON Parsing Error&quot;, e.toString());</span>
+<span class="nc" id="L137">                            msgResponse.setText(&quot;Error: Unable to parse the response.&quot;);</span>
+<span class="fc" id="L138">                        }</span>
+<span class="fc" id="L139">                    }</span>
+                },
+<span class="fc" id="L141">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L144">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L145">                    }</span>
+                }
+<span class="fc" id="L147">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L150">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L153">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L158">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L161">                return params;</span>
+            }
+        };
+        // Adding request to request queue
+<span class="fc" id="L165">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L166">    }</span>
+
+    private void getRequest() {
+
+        // Request a string response from the provided URL.
+<span class="nc" id="L171">        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,</span>
+<span class="nc" id="L172">                new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        // String response can be converted to JSONObject via
+                        // JSONObject object = new JSONObject(response);
+<span class="nc" id="L178">                        tvResponse.setText(&quot;Response is: &quot;+ response);</span>
+<span class="nc" id="L179">                    }</span>
+                },
+<span class="nc" id="L181">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L184">                        tvResponse.setText(&quot;That didn't work!&quot; + error.toString());</span>
+<span class="nc" id="L185">                    }</span>
+<span class="nc" id="L186">                }){</span>
+
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="nc" id="L190">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="nc" id="L193">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L198">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L201">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="nc" id="L206">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);</span>
+<span class="nc" id="L207">    }</span>
+
+    private void postRequest() {
+
+        // Convert input to JSONObject
+<span class="fc" id="L212">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="fc" id="L214">            String commentText = cmtEdt.getText().toString();  // Get the input text from EditText</span>
+<span class="fc" id="L215">            postBody.put(&quot;comment&quot;, commentText);// Assuming the server expects a key &quot;comment&quot;</span>
+<span class="nc" id="L216">        } catch (Exception e){</span>
+<span class="nc" id="L217">            e.printStackTrace();</span>
+<span class="fc" id="L218">        }</span>
+
+<span class="fc" id="L220">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                url,
+                postBody,
+<span class="fc" id="L224">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+<span class="nc" id="L228">                            String comment = response.getString(&quot;comment&quot;);</span>
+<span class="nc" id="L229">                            commentUser.setText(comment);</span>
+<span class="nc" id="L230">                            curID = response.getString(&quot;ID&quot;);</span>
+<span class="nc" id="L231">                        } catch (Exception e) {</span>
+<span class="nc" id="L232">                            Log.e(&quot;JSON Parsing Error&quot;, e.toString());</span>
+<span class="nc" id="L233">                            tvResponse.setText(&quot;Error: Unable to parse the response.&quot;);</span>
+<span class="nc" id="L234">                        }</span>
+<span class="nc" id="L235">                    }</span>
+                },
+<span class="fc" id="L237">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L240">                        tvResponse.setText(error.getMessage());</span>
+<span class="fc" id="L241">                    }</span>
+                }
+<span class="fc" id="L243">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L246">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L249">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L254">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L257">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L262">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="fc" id="L263">    }</span>
+
+    private void deleteRequest(String curID) {
+<span class="fc" id="L266">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.DELETE,
+                URL_JSON_OBJECT + curID,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L270">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+<span class="nc" id="L273">                        Log.d(&quot;Volley Response&quot;, response.toString());</span>
+<span class="nc" id="L274">                        msgResponse.setText(response.toString());</span>
+<span class="nc" id="L275">                    }</span>
+                },
+<span class="fc" id="L277">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L280">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L281">                    }</span>
+                }
+<span class="fc" id="L283">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L286">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L289">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L294">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L297">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L302">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L303">    }</span>
+
+    private void putRequest(String curID) {
+
+        // Convert input to JSONObject
+<span class="fc" id="L308">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="fc" id="L310">            String edtCmtText = cmtEdtEdt.getText().toString();  // Get the input text from EditText</span>
+<span class="fc" id="L311">            postBody.put(&quot;comment&quot;, edtCmtText);// Assuming the server expects a key &quot;comment&quot;</span>
+<span class="nc" id="L312">        } catch (Exception e){</span>
+<span class="nc" id="L313">            e.printStackTrace();</span>
+<span class="fc" id="L314">        }</span>
+
+<span class="fc" id="L316">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.PUT,
+                URL_JSON_OBJECT + curID,
+                postBody,
+<span class="fc" id="L320">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+<span class="nc" id="L324">                            String comment = response.getString(&quot;comment&quot;);</span>
+<span class="nc" id="L325">                            commentUser.setText(comment);</span>
+<span class="nc" id="L326">                        } catch (Exception e) {</span>
+<span class="nc" id="L327">                            Log.e(&quot;JSON Parsing Error&quot;, e.toString());</span>
+<span class="nc" id="L328">                            tvResponse.setText(&quot;Error: Unable to parse the response.&quot;);                        }</span>
+<span class="nc" id="L329">                    }</span>
+                },
+<span class="fc" id="L331">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L334">                        tvResponse.setText(error.getMessage());</span>
+<span class="fc" id="L335">                    }</span>
+                }
+<span class="fc" id="L337">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L340">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L343">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L348">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L351">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L356">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="fc" id="L357">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

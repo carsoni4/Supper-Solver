@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/signup"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/signup_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rectangle"
+        android:gravity="center"
+        android:text="Sign Up Page"
+        android:textAlignment="center"
+        android:textColor="#fcfec3"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.238"></TextView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/signup_header">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Name: "
+            android:textColor="#EDA071"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter Your Name Here"
+            android:inputType="text"
+            android:textColor="#fff"
+            android:textColorHint="#EDA071"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout1"
+        app:layout_constraintStart_toStartOf="@id/linearLayout1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Username: "
+            android:textColor="#EDA071"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter Username Here"
+            android:inputType="text"
+            android:textColor="#fff"
+            android:textColorHint="#EDA071"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2"
+        app:layout_constraintStart_toStartOf="@id/linearLayout2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password: "
+            android:textColor="#EDA071"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:hint="Enter Password Here"
+            android:inputType="textPassword"
+            android:textColor="#fff"
+            android:textColorHint="#EDA071"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout3"
+        app:layout_constraintStart_toStartOf="@id/linearLayout3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password: "
+            android:textColor="#EDA071"
+            android:textSize="20dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/confirm_password"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:hint="Confirm Password Here"
+            android:inputType="textPassword"
+            android:textColor="#fff"
+            android:textColorHint="#EDA071"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="@id/linearLayout4"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout4">
+
+        <Button
+            android:id="@+id/home_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:text="Home"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"></Button>
+
+        <Button
+            android:id="@+id/signup_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:backgroundTint="#533B2D"
+            android:text="Sign Up"
+            android:textColor="#EDA071"
+            android:textSize="20sp"
+            android:textStyle="bold"></Button>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

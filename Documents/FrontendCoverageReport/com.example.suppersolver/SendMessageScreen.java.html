@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SendMessageScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">SendMessageScreen.java</span></div><h1>SendMessageScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+/**
+ * Live chat with another user, displays message history upon opening.
+ */
+<span class="fc" id="L30">public class SendMessageScreen extends AppCompatActivity implements WebSocketListener{</span>
+
+<span class="fc" id="L32">    private String serverURL = &quot;ws://coms-3090-025.class.las.iastate.edu:8080/chat/&quot;;</span>
+    private String userID;
+    private String openUSER;
+    private String curUsername;
+
+    private TextView msgTxt;
+    private EditText message;
+    private Button sendMessageBtn;
+
+
+    protected void onCreate(Bundle savedInstanceState) {
+
+<span class="fc" id="L44">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L45">        setContentView(R.layout.sendmessage_screen);</span>
+<span class="fc" id="L46">        EdgeToEdge.enable(this);</span>
+<span class="fc" id="L47">        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.sendMessageScreen), (v, insets) -&gt; {</span>
+<span class="fc" id="L48">            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());</span>
+<span class="fc" id="L49">            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);</span>
+<span class="fc" id="L50">            return insets;</span>
+        });
+
+<span class="fc" id="L53">        message = findViewById(R.id.sendMessage);</span>
+<span class="fc" id="L54">        sendMessageBtn = findViewById(R.id.sendMessageBtn);</span>
+<span class="fc" id="L55">        msgTxt = findViewById(R.id.msgTxt);</span>
+
+<span class="fc" id="L57">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (extras == null) {</span>
+<span class="nc" id="L59">            Toast.makeText(SendMessageScreen.this, &quot;Failed to get extras from intent&quot;, Toast.LENGTH_LONG).show();</span>
+        } else {
+<span class="fc" id="L61">            curUsername = extras.getString(&quot;username&quot;);</span>
+<span class="fc" id="L62">            userID = extras.getString(&quot;USERID&quot;);</span>
+<span class="fc" id="L63">            openUSER = extras.getString(&quot;openUSER&quot;);</span>
+        }
+
+<span class="fc" id="L66">        Log.d(&quot;Websocket Test&quot;, serverURL + userID);</span>
+<span class="fc" id="L67">        WebSocketManager.getInstance().connectWebSocket(serverURL + userID);</span>
+<span class="fc" id="L68">        WebSocketManager.getInstance().setWebSocketListener(SendMessageScreen.this);</span>
+
+<span class="fc" id="L70">        sendMessageBtn.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="nc" id="L72">                Log.d(&quot;Websocket Test&quot;,&quot;@&quot; + openUSER + &quot; &quot; + message.getText().toString());</span>
+<span class="nc" id="L73">                WebSocketManager.getInstance().sendMessage(&quot;@&quot; + openUSER + &quot; &quot; + message.getText().toString());</span>
+<span class="nc" id="L74">            }</span>
+        });
+
+<span class="fc" id="L77">    }</span>
+
+    @Override
+    public void onWebSocketMessage(String message) {
+<span class="fc" id="L81">        Log.d(&quot;Websocket Test&quot;,&quot;Received message: &quot; + message);</span>
+<span class="pc bpc" id="L82" title="2 of 4 branches missed.">        if (message.startsWith(curUsername) || message.startsWith(openUSER)) {</span>
+<span class="fc" id="L83">            runOnUiThread(new Runnable() {</span>
+                @Override
+                public void run() {
+<span class="fc" id="L86">                    msgTxt.setText(msgTxt.getText().toString() + &quot;\n&quot; + message);</span>
+<span class="fc" id="L87">                }</span>
+            });
+        }
+<span class="fc" id="L90">    }</span>
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+<span class="nc" id="L94">        Log.d(&quot;Websocket Test&quot;, &quot;Websocket Closed&quot;);</span>
+<span class="nc" id="L95">    }</span>
+
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakedata) {
+<span class="fc" id="L99">        Log.d(&quot;Websocket Test&quot;, &quot;Websocket Opened&quot;);</span>
+<span class="fc" id="L100">        WebSocketManager.getInstance().sendMessage(&quot;[OPENUSER] &quot; + openUSER);</span>
+<span class="fc" id="L101">    }</span>
+
+    @Override
+    public void onWebSocketError(Exception ex) {
+<span class="nc" id="L105">        Log.d(&quot;Websocket Test&quot;, String.valueOf(ex));</span>
+<span class="nc" id="L106">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

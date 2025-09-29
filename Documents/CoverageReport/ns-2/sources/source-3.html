@@ -1,0 +1,295 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GroupController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: GroupController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GroupController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44.4%
+  </span>
+  <span class="absValue">
+    (4/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.9%
+  </span>
+  <span class="absValue">
+    (14/36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    47.1%
+  </span>
+  <span class="absValue">
+    (32/68)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import supperSolver.DataTransferObjects.ArrayListDTO;
+&nbsp;import supperSolver.Models.MIngredient;
+&nbsp;import supperSolver.Models.MUser;
+&nbsp;import supperSolver.Repositories.RIngredient;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class GroupController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RUser rUser;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RIngredient rIngredient;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;returns if a user is in a group or not&quot;)
+&nbsp;    @GetMapping(&quot;/group/userInGroup/{userID}&quot;)
+&nbsp;    public boolean checkUserInGroup(@PathVariable int userID){
+&nbsp;
+<b class="nc">&nbsp;        if(rUser.findById(userID).isPresent()){</b>
+<b class="nc">&nbsp;            MUser currentUser = rUser.findById(userID).get();</b>
+<b class="nc">&nbsp;            return currentUser.getGroupID() != 0;</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;User not found&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;returns users groupID&quot;)
+&nbsp;    @GetMapping(&quot;/group/userGroupID/{userID}&quot;)
+&nbsp;    public String getGroupID(@PathVariable int userID){
+<b class="nc">&nbsp;        if(rUser.findById(userID).isPresent()){</b>
+<b class="nc">&nbsp;            MUser currentUser = rUser.findById(userID).get();</b>
+<b class="nc">&nbsp;            return String.valueOf(currentUser.getGroupID());</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;User not found&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;returns a list of all ingredients shared by groupID adds quantity if multiple of the same&quot;)
+&nbsp;    @GetMapping(&quot;/group/getAllIngredients/{groupID}&quot;)
+&nbsp;    public List&lt;MIngredient&gt; getGroupIngredients(@PathVariable int groupID){
+&nbsp;        //if group exist
+<b class="pc">&nbsp;        if(rUser.findByGroupID(groupID).isPresent()){</b>
+<b class="fc">&nbsp;            List&lt;MUser&gt; groupUsers =  rUser.findByGroupID(groupID).get();</b>
+<b class="fc">&nbsp;            List&lt;MIngredient&gt; groupIngredients = new ArrayList&lt;&gt;(List.of());</b>
+<b class="fc">&nbsp;            for(MUser user : groupUsers){</b>
+&nbsp;                //Getting list by user
+<b class="fc">&nbsp;                List&lt;MIngredient&gt; userList = rIngredient.findByUserID(user.getID()).get();</b>
+<b class="fc">&nbsp;                for(MIngredient ing : userList) {</b>
+<b class="fc">&nbsp;                    if (groupIngredients.stream().noneMatch(i -&gt; i.getName().equals(ing.getName()))){</b>
+<b class="fc">&nbsp;                        groupIngredients.add(ing);</b>
+&nbsp;                    }
+&nbsp;                    else
+&nbsp;                    {
+<b class="fc">&nbsp;                        MIngredient existingIngredient = groupIngredients.stream()</b>
+<b class="fc">&nbsp;                                .filter(i -&gt; i.getName().equals(ing.getName()))</b>
+<b class="fc">&nbsp;                                .findFirst()</b>
+<b class="fc">&nbsp;                                .orElse(null);</b>
+<b class="pc">&nbsp;                        if(existingIngredient != null){</b>
+<b class="fc">&nbsp;                            existingIngredient.setQuantity(existingIngredient.getQuantity() + ing.getQuantity());</b>
+&nbsp;                        }
+&nbsp;                        else {
+<b class="nc">&nbsp;                            System.out.println(&quot;Hit null ing&quot;);</b>
+&nbsp;                        }
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;            return groupIngredients;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;Group Does not exist&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    
+&nbsp;    @Operation(summary = &quot;Creates a group (Finds highest ID + 1) assigns current user and adds all users provided in array list&quot;)
+&nbsp;    @PostMapping(&quot;/group/{currentUserID}&quot;)
+&nbsp;    public List&lt;MUser&gt; createAndAssignGroup(@PathVariable int currentUserID, @RequestBody ArrayListDTO array){
+&nbsp;
+&nbsp;        //Getting max of current group column + 1 for new group
+<b class="fc">&nbsp;        int newGroupID = rUser.findMaxGroupID() + 1;</b>
+<b class="pc">&nbsp;        if(rUser.findById(currentUserID).isPresent())</b>
+&nbsp;        {
+<b class="fc">&nbsp;            MUser currentUser = rUser.findById(currentUserID).get();</b>
+<b class="fc">&nbsp;            currentUser.setGroupID(newGroupID);</b>
+<b class="fc">&nbsp;            rUser.save(currentUser);</b>
+&nbsp;            //Setting all users groupID
+<b class="fc">&nbsp;            for(String uname : array.getArray()){</b>
+<b class="fc">&nbsp;                MUser userToAdd = null;</b>
+<b class="fc">&nbsp;                Optional&lt;MUser&gt; check = rUser.findByUsername(uname);</b>
+<b class="pc">&nbsp;                if (check.isPresent()) {</b>
+<b class="fc">&nbsp;                    userToAdd = check.get();</b>
+<b class="fc">&nbsp;                    userToAdd.setGroupID(newGroupID);</b>
+<b class="fc">&nbsp;                    rUser.save(userToAdd);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="pc">&nbsp;            if(rUser.findByGroupID(newGroupID).isPresent()) {</b>
+<b class="fc">&nbsp;                return rUser.findByGroupID(newGroupID).get();</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else throw new IllegalArgumentException(&quot;No Group Found&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;User ID not found&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;returns list of all users with group id&quot;)
+&nbsp;    @GetMapping(&quot;/group/getAllUsers/{groupID}&quot;)
+&nbsp;    public List&lt;MUser&gt; getGroupUsers(@PathVariable int groupID){
+<b class="pc">&nbsp;        if(rUser.findByGroupID(groupID).isPresent()){</b>
+<b class="fc">&nbsp;            return rUser.findByGroupID(groupID).get();</b>
+&nbsp;        }
+&nbsp;        else{
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Group does not exist&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;adds a users to a group&quot;)
+&nbsp;    @PutMapping(&quot;/group/addUser/{groupID}&quot;)
+&nbsp;    public MUser addUserToGroup(@PathVariable int groupID, @RequestBody ArrayListDTO usersToAdd){
+<b class="nc">&nbsp;        List&lt;String&gt; notFound = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(String username : usersToAdd.getArray()) {</b>
+<b class="nc">&nbsp;            if (rUser.findByUsername(username).isPresent()) {</b>
+<b class="nc">&nbsp;                MUser currentUser = rUser.findByUsername(username).get();</b>
+<b class="nc">&nbsp;                currentUser.setGroupID(groupID);</b>
+<b class="nc">&nbsp;                rUser.save(currentUser);</b>
+&nbsp;            }
+&nbsp;            else{
+<b class="nc">&nbsp;                notFound.add(username);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (!notFound.isEmpty()){</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;user no be real&quot; + notFound);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;user does not exist&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Removes User from their current group&quot;)
+&nbsp;    @PutMapping(&quot;/group/removeUser/{userID}&quot;)
+&nbsp;    public MUser removeUserFromGroup(@PathVariable int userID)
+&nbsp;    {
+<b class="nc">&nbsp;        if(rUser.findById(userID).isPresent())</b>
+&nbsp;        {
+<b class="nc">&nbsp;            MUser currentUser = rUser.findById(userID).get();</b>
+<b class="nc">&nbsp;            currentUser.setGroupID(0);</b>
+<b class="nc">&nbsp;            rUser.save(currentUser);</b>
+<b class="nc">&nbsp;            return currentUser;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;User does not exist&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Removes all users from group, or deletes group by groupID&quot;)
+&nbsp;    @DeleteMapping(&quot;/group/{groupID}&quot;)
+&nbsp;    public String deleteGroup(@PathVariable int groupID){
+&nbsp;
+<b class="nc">&nbsp;        if(rUser.findByGroupID(groupID).isPresent()) {</b>
+<b class="nc">&nbsp;            List&lt;MUser&gt; groupUsers = rUser.findByGroupID(groupID).get();</b>
+<b class="nc">&nbsp;            for(MUser currentUser : groupUsers){</b>
+&nbsp;                //Settings all users in group gid to 0 &quot;removing them
+&nbsp;                //and basically deleting group&quot;
+<b class="nc">&nbsp;                currentUser.setGroupID(0);</b>
+<b class="nc">&nbsp;                rUser.save(currentUser);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return &quot;Group &quot; + groupID + &quot; has been deleted&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else throw new IllegalArgumentException(&quot;No Users Found With groupID &quot; + groupID);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-13 16:19</div>
+</div>
+</body>
+</html>

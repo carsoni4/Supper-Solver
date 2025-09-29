@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">InventoryScreen.java</span></div><h1>InventoryScreen.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * The inventory displays a list of all the user's ingredients. They can post new ingredients or delete existing ones.
+ */
+<span class="fc" id="L31">public class InventoryScreen extends AppCompatActivity {</span>
+
+    private Button backButton, addBtn, deleteBtn;
+    private EditText editName, editQty, editNumberDel;
+    private String userID, username;
+    private TextView ingredientList;
+<span class="fc" id="L37">    private int[] ingredientIds = new int[100];</span>
+    private static final String getUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/ingredients/user/&quot;;
+    private static final String postUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/ingredients&quot;;
+    private static final String deleteUrl = &quot;http://coms-3090-025.class.las.iastate.edu:8080/ingredients/&quot;;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L44">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L45">        setContentView(R.layout.inventory_screen);</span>
+
+<span class="fc" id="L47">        backButton = findViewById(R.id.inv_back_button);</span>
+<span class="fc" id="L48">        addBtn = findViewById(R.id.add_btn);</span>
+<span class="fc" id="L49">        deleteBtn = findViewById(R.id.delete_btn);</span>
+<span class="fc" id="L50">        editName = findViewById(R.id.edit_name);</span>
+<span class="fc" id="L51">        editQty = findViewById(R.id.edit_qty);</span>
+<span class="fc" id="L52">        ingredientList = findViewById(R.id.ingredient_list);</span>
+<span class="fc" id="L53">        editNumberDel = findViewById(R.id.edit_number_del);</span>
+
+<span class="fc" id="L55">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if(extras == null) {</span>
+        }
+        else {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">            if (extras.containsKey(&quot;USERID&quot;)) {</span>
+<span class="fc" id="L60">                userID = extras.getString(&quot;USERID&quot;);</span>
+<span class="fc" id="L61">                username = extras.getString(&quot;username&quot;);</span>
+            }
+        }
+
+<span class="fc" id="L65">        getRequest(userID);</span>
+
+<span class="fc" id="L67">        backButton.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L69">                Intent intent = new Intent(InventoryScreen.this, HomeFeed.class);</span>
+<span class="fc" id="L70">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L71">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L72">                startActivity(intent);</span>
+<span class="fc" id="L73">            }</span>
+        });
+
+<span class="fc" id="L76">        addBtn.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">                if(!(editName.getText().toString().isEmpty() || editQty.getText().toString().isEmpty())){</span>
+<span class="fc" id="L79">                    postRequest();</span>
+                }
+<span class="fc" id="L81">            }</span>
+        });
+
+<span class="fc" id="L84">        deleteBtn.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">                if(!editNumberDel.getText().toString().isEmpty()){</span>
+<span class="fc" id="L87">                    deleteReq(String.valueOf(ingredientIds[Integer.parseInt(editNumberDel.getText().toString()) - 1]));</span>
+<span class="fc" id="L88">                    Toast.makeText(InventoryScreen.this, &quot;Ingredient deleted&quot;, Toast.LENGTH_SHORT).show();</span>
+                }
+<span class="fc" id="L90">            }</span>
+        });
+
+<span class="fc" id="L93">    }</span>
+
+    private void postRequest() {
+
+<span class="fc" id="L97">        JSONObject postBody = new JSONObject();</span>
+        try{
+<span class="fc" id="L99">            postBody.put(&quot;recipeID&quot;, -1);</span>
+<span class="fc" id="L100">            postBody.put(&quot;userID&quot;, Integer.parseInt(userID));</span>
+<span class="fc" id="L101">            postBody.put(&quot;name&quot;, editName.getText().toString());</span>
+
+<span class="fc" id="L103">            Double qty = Double.valueOf(editQty.getText().toString());</span>
+<span class="fc" id="L104">            postBody.put(&quot;quantity&quot;, qty);</span>
+<span class="nc" id="L105">        } catch (Exception e){</span>
+<span class="nc" id="L106">            e.printStackTrace();</span>
+<span class="fc" id="L107">        }</span>
+
+<span class="fc" id="L109">        JsonObjectRequest request = new JsonObjectRequest(</span>
+                Request.Method.POST,
+                postUrl,
+                postBody,
+<span class="fc" id="L113">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+<span class="fc" id="L117">                            String iname = response.getString(&quot;name&quot;);</span>
+<span class="fc" id="L118">                            String iqty = response.getString(&quot;quantity&quot;);</span>
+<span class="fc" id="L119">                            ingredientList.setText(ingredientList.getText().toString() + &quot;\n&quot; + iname + &quot; x&quot; + iqty);</span>
+<span class="nc" id="L120">                        } catch (JSONException e) {</span>
+<span class="nc" id="L121">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L122">                        }</span>
+<span class="fc" id="L123">                    }</span>
+                },
+<span class="fc" id="L125">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L128">                    }</span>
+                }
+<span class="fc" id="L130">        ){</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L133">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+                //                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+                //                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L136">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L141">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+                //                params.put(&quot;param1&quot;, &quot;value1&quot;);
+                //                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L144">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L149">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(request);</span>
+<span class="fc" id="L150">    }</span>
+
+    private void getRequest(String uid) {
+<span class="fc" id="L153">        JsonArrayRequest jsonObjReq = new JsonArrayRequest(</span>
+                Request.Method.GET,
+                getUrl + uid,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L157">                new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">                        for (int i = 0; i &lt; response.length(); i++) {</span>
+                            try {
+<span class="fc" id="L162">                                JSONObject curIngredient = response.getJSONObject(i);</span>
+<span class="fc" id="L163">                                String iname = curIngredient.getString(&quot;name&quot;);</span>
+<span class="fc" id="L164">                                String iqty = String.valueOf(curIngredient.getDouble(&quot;quantity&quot;));</span>
+<span class="fc" id="L165">                                ingredientIds[i] = curIngredient.getInt(&quot;id&quot;);</span>
+<span class="fc" id="L166">                                ingredientList.setText(ingredientList.getText().toString() + &quot;\n&quot; + String.valueOf(i + 1) + &quot;) &quot; + iname + &quot; x&quot; + iqty);</span>
+<span class="nc" id="L167">                            } catch (JSONException e) {</span>
+<span class="nc" id="L168">                                e.printStackTrace();</span>
+<span class="fc" id="L169">                            }</span>
+                        }
+<span class="fc" id="L171">                    }</span>
+                },
+<span class="fc" id="L173">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L176">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="nc" id="L177">                    }</span>
+                }
+<span class="fc" id="L179">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L182">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L185">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L190">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L193">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L198">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L199">    }</span>
+
+    private void deleteReq(String id) {
+<span class="fc" id="L202">        JsonObjectRequest jsonObjReq = new JsonObjectRequest(</span>
+                Request.Method.DELETE,
+                deleteUrl + id,
+                null, // Pass null as the request body since it's a GET request
+<span class="fc" id="L206">                new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+<span class="nc" id="L210">                    }</span>
+                },
+<span class="fc" id="L212">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L215">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L216">                    }</span>
+                }
+<span class="fc" id="L218">        ) {</span>
+            @Override
+            public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+<span class="fc" id="L221">                HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();</span>
+//                headers.put(&quot;Authorization&quot;, &quot;Bearer YOUR_ACCESS_TOKEN&quot;);
+//                headers.put(&quot;Content-Type&quot;, &quot;application/json&quot;);
+<span class="fc" id="L224">                return headers;</span>
+            }
+
+            @Override
+            protected Map&lt;String, String&gt; getParams() {
+<span class="nc" id="L229">                Map&lt;String, String&gt; params = new HashMap&lt;String, String&gt;();</span>
+//                params.put(&quot;param1&quot;, &quot;value1&quot;);
+//                params.put(&quot;param2&quot;, &quot;value2&quot;);
+<span class="nc" id="L232">                return params;</span>
+            }
+        };
+
+        // Adding request to request queue
+<span class="fc" id="L237">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjReq);</span>
+<span class="fc" id="L238">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

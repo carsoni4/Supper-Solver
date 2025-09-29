@@ -1,0 +1,224 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ImageController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: ImageController (supperSolver.Controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Controllers;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import supperSolver.Models.MImage;
+&nbsp;import supperSolver.Models.MRating;
+&nbsp;import supperSolver.Repositories.RImage;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.security.InvalidParameterException;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;import java.nio.file.*;
+&nbsp;
+&nbsp;@RestController
+<b class="nc">&nbsp;public class ImageController</b>
+&nbsp;{
+&nbsp;    @Autowired
+&nbsp;    private RImage rImage;
+&nbsp;
+&nbsp;    //directory to store images
+&nbsp;    private static final String DIR = &quot;images/&quot;;
+&nbsp;
+&nbsp;    //uploading images
+&nbsp;    @Operation(summary = &quot;Post to create a new image object&quot;)
+&nbsp;    @PostMapping(&quot;/image&quot;)
+&nbsp;    public MImage uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file, @RequestParam int imgPos, @RequestParam int recipeID, @RequestParam int userID) throws Exception
+&nbsp;    {
+<b class="nc">&nbsp;        if(file.isEmpty())</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;No File found&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        MImage obj = new MImage();</b>
+&nbsp;
+<b class="nc">&nbsp;        obj.setImagePos(imgPos);</b>
+<b class="nc">&nbsp;        obj.setRecipeID(recipeID);</b>
+<b class="nc">&nbsp;        obj.setUserID(userID);</b>
+&nbsp;
+<b class="nc">&nbsp;        int id = rImage.save(obj).getID();</b>
+&nbsp;
+<b class="nc">&nbsp;        MImage existing = rImage.findById(id).get();</b>
+&nbsp;
+<b class="nc">&nbsp;        Path filePath = Paths.get(DIR + id + file.getOriginalFilename()); //so the image doesn&#39;t overlap with another add id to filename</b>
+&nbsp;
+<b class="nc">&nbsp;        Files.createDirectories(filePath.getParent());</b>
+<b class="nc">&nbsp;        Files.write(filePath, file.getBytes()); //writing the file to the server</b>
+&nbsp;
+<b class="nc">&nbsp;        existing.setImgUrl(filePath.toString()); //filling out image auto creates ID and url is decided on create</b>
+&nbsp;
+<b class="nc">&nbsp;        return rImage.save(existing); //put image back with filepath, needed generated id for filename</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //getting all images by recipeID
+&nbsp;    @Operation(summary = &quot;Getting a list of images by a recipeID (Many images to one recipe)&quot;)
+&nbsp;    @GetMapping(&quot;/image/byrecipe/{recipeID}&quot;)
+&nbsp;    public List&lt;MImage&gt; findByRecipe(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rImage.findByRecipeID(recipeID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Gets profile picture for user
+&nbsp;    @Operation(summary = &quot;Getting an image based on a user ID (Profile Picture)&quot;)
+&nbsp;    @GetMapping(&quot;image/user/{userID}&quot;)
+&nbsp;    public MImage findByUserID(@PathVariable(&quot;userID&quot;) int userID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rImage.findByUserID(userID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //Getting first image
+&nbsp;    @Operation(summary = &quot;Getting first image of a recipe (Main cover image)&quot;)
+&nbsp;    @GetMapping(&quot;/image/first/{recipeID}&quot;)
+&nbsp;    public MImage getFirstImage(@PathVariable(&quot;recipeID&quot;) int recipeID)
+&nbsp;    {
+<b class="nc">&nbsp;        return rImage.findByRecipeIDAndImagePos(recipeID,0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Deletes an image by its ID
+&nbsp;    @Operation(summary = &quot;Deleting image by its unique ID&quot;)
+&nbsp;    @DeleteMapping(&quot;/image/{id}&quot;)
+&nbsp;    public String deleteImage(@PathVariable(&quot;id&quot;) int id) throws IOException
+&nbsp;    {
+<b class="nc">&nbsp;        if(rImage.findById(id).isEmpty())</b>
+&nbsp;        {
+<b class="nc">&nbsp;            throw new InvalidParameterException(&quot;No image with that ID found&quot;);</b>
+&nbsp;        }
+&nbsp;        else
+&nbsp;        {
+&nbsp;            //deleting the actual file from server using path from database
+<b class="nc">&nbsp;            Path delPath = Path.of(rImage.findById(id).get().getImgUrl());</b>
+<b class="nc">&nbsp;            Files.delete(delPath);</b>
+&nbsp;
+&nbsp;            //deleting image entry in database
+<b class="nc">&nbsp;            rImage.deleteById(id);</b>
+<b class="nc">&nbsp;            return &quot;Image ID: &quot; + id + &quot; was deleted&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Create a new image
+&nbsp;    @Operation(summary = &quot;Posting an image without a file (Image is hosted not on our server)&quot;)
+&nbsp;    @PostMapping(&quot;/image/link&quot;)
+&nbsp;    public MImage link(@RequestBody MImage image)
+&nbsp;    {
+<b class="nc">&nbsp;        return rImage.save(image);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 14:04</div>
+</div>
+</body>
+</html>

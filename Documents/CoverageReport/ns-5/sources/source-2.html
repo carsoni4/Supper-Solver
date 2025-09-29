@@ -1,0 +1,385 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > NotificationWebSocket</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.WebSockets</a>
+</div>
+
+<h1>Coverage Summary for Class: NotificationWebSocket (supperSolver.WebSockets)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NotificationWebSocket</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/86)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.WebSockets;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;import jakarta.websocket.OnClose;
+&nbsp;import jakarta.websocket.OnError;
+&nbsp;import jakarta.websocket.OnMessage;
+&nbsp;import jakarta.websocket.OnOpen;
+&nbsp;import jakarta.websocket.Session;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import supperSolver.Models.MMessage;
+&nbsp;import supperSolver.Models.MUser;
+&nbsp;import supperSolver.Repositories.RMessage;
+&nbsp;import supperSolver.Repositories.RUser;
+&nbsp;
+&nbsp;@Controller      // this is needed for this to be an endpoint to springboot
+&nbsp;@ServerEndpoint(value = &quot;/chat/{userid}&quot;)  // this is Websocket url
+<b class="nc">&nbsp;public class NotificationWebSocket {</b>
+&nbsp;
+&nbsp;
+&nbsp;    private static RMessage msgRepo;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setMessageRepository(RMessage repo) {
+<b class="nc">&nbsp;        msgRepo = repo;  // we are setting the static variable</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static RUser userRepo;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setUserRepo(RUser repo){
+<b class="nc">&nbsp;        userRepo = repo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // Store all socket session and their corresponding username.
+<b class="nc">&nbsp;    private static Map&lt;Session, String&gt; sessionUsernameMap = new Hashtable&lt;&gt;();</b>
+<b class="nc">&nbsp;    private static Map&lt;String, Session&gt; usernameSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    private final Logger logger = LoggerFactory.getLogger(NotificationWebSocket.class);</b>
+&nbsp;
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;userid&quot;) int userid) throws IOException
+&nbsp;    {
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Open&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        String username = userRepo.findById(userid).get().getUsername();</b>
+&nbsp;
+&nbsp;        // store connecting user information
+<b class="nc">&nbsp;        sessionUsernameMap.put(session, username);</b>
+<b class="nc">&nbsp;        usernameSessionMap.put(username, session);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, String message) throws IOException
+&nbsp;    {
+&nbsp;        // Handle new messages
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Message: Got Message:&quot; + message);</b>
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+<b class="nc">&nbsp;        int groupID = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;        if (userRepo.findByUsername(username).isPresent())</b>
+<b class="nc">&nbsp;            groupID = userRepo.findByUsername(username).get().getGroupID();</b>
+&nbsp;
+&nbsp;        // Direct message to a user using the format &quot;@username &lt;message&gt;&quot;
+<b class="nc">&nbsp;        if (message.startsWith(&quot;@&quot;))</b>
+&nbsp;        {
+<b class="nc">&nbsp;            String destUsername = message.split(&quot; &quot;)[0].substring(1);</b>
+&nbsp;
+<b class="nc">&nbsp;            if(usernameSessionMap.containsKey(destUsername))</b>
+&nbsp;            {
+&nbsp;                // send the message to the sender and receiver
+<b class="nc">&nbsp;                sendMessageToPArticularUser(destUsername, username + &quot;: &quot; + message);</b>
+<b class="nc">&nbsp;                notificationSend(destUsername, username);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            sendMessageToPArticularUser(username, username + &quot;: &quot; + message);</b>
+<b class="nc">&nbsp;            msgRepo.save(new MMessage(username, message, destUsername, 0));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if(message.startsWith(&quot;#&quot;))</b>
+&nbsp;        {
+&nbsp;            //grabbing message
+<b class="nc">&nbsp;            sendMessageToGroup(username, message.substring(1));</b>
+<b class="nc">&nbsp;            msgRepo.save(new MMessage(username, message,null,groupID));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if(message.startsWith(&quot;[OPENUSER]&quot;))</b>
+&nbsp;        {
+<b class="nc">&nbsp;            String chatHist = message.substring(11);</b>
+<b class="nc">&nbsp;            sendMessageToPArticularUser(username, getUserHistory(chatHist, username));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if(message.startsWith(&quot;[OPENGROUP]&quot;))</b>
+&nbsp;        {
+<b class="nc">&nbsp;            sendMessageToPArticularUser(username, getGroupHistory(groupID));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if(message.startsWith(&quot;[FRIEND]&quot;))</b>
+&nbsp;        {
+<b class="nc">&nbsp;            if(usernameSessionMap.containsKey(message.substring(9)))</b>
+<b class="nc">&nbsp;                friendNotificationSend(message.substring(9));</b>
+&nbsp;        }
+&nbsp;        else
+&nbsp;        {
+<b class="nc">&nbsp;            broadcast(&quot;BROKEN&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session) throws IOException
+&nbsp;    {
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Close&quot;);</b>
+&nbsp;
+&nbsp;        // remove the user connection information
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+<b class="nc">&nbsp;        sessionUsernameMap.remove(session);</b>
+<b class="nc">&nbsp;        usernameSessionMap.remove(username);</b>
+&nbsp;
+&nbsp;        // broadcase that the user disconnected
+<b class="nc">&nbsp;        String message = username + &quot; disconnected&quot;;</b>
+<b class="nc">&nbsp;        broadcast(message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable)
+&nbsp;    {
+&nbsp;        // Do error handling here
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Error&quot;);</b>
+<b class="nc">&nbsp;        throwable.printStackTrace();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    private void sendMessageToPArticularUser(String username, String message)
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            usernameSessionMap.get(username).getBasicRemote().sendText(message);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        catch (IOException e)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
+<b class="nc">&nbsp;            e.printStackTrace();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //Group Messaging
+&nbsp;    private void sendMessageToGroup(String usernameOfSender, String message)
+&nbsp;    {
+<b class="nc">&nbsp;        MUser currentUser = userRepo.findByUsername(usernameOfSender).get();</b>
+<b class="nc">&nbsp;        List&lt;MUser&gt; group = userRepo.findByGroupID(currentUser.getGroupID()).get();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(MUser user : group)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            if(usernameSessionMap.containsKey(user.getUsername()))</b>
+&nbsp;            {
+&nbsp;                try
+&nbsp;                {
+&nbsp;                    //sends message to everyone including the sender, no notification for the sender
+<b class="nc">&nbsp;                    usernameSessionMap.get(user.getUsername()).getBasicRemote().sendText(usernameOfSender + &quot;: &quot; + message);</b>
+&nbsp;
+<b class="nc">&nbsp;                    if (!user.getUsername().equals(usernameOfSender))</b>
+<b class="nc">&nbsp;                        notificationSend(user.getUsername(), usernameOfSender);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                catch (IOException e)</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    logger.info(&quot;Exception: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;                    e.printStackTrace();</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void notificationSend(String userToNotify, String userFrom)
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            usernameSessionMap.get(userToNotify).getBasicRemote().sendText(&quot;[NOTIFICATION] &quot; + userFrom);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        catch (IOException e)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void friendNotificationSend(String userToNotify)
+&nbsp;    {
+&nbsp;        try
+&nbsp;        {
+<b class="nc">&nbsp;            usernameSessionMap.get(userToNotify).getBasicRemote().sendText(&quot;[FRIENDNOTIFICATION]&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        catch (IOException e)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //ONLY USED TO BROADCAST BROKEN WHEN A MESSAGE IS SENT WITHOUT A PURPOSE
+&nbsp;    private void broadcast(String message)
+&nbsp;    {
+<b class="nc">&nbsp;        sessionUsernameMap.forEach((session, username) -&gt; {</b>
+&nbsp;            try
+&nbsp;            {
+<b class="nc">&nbsp;                session.getBasicRemote().sendText(message);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            catch (IOException e)</b>
+&nbsp;            {
+<b class="nc">&nbsp;                logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
+<b class="nc">&nbsp;                e.printStackTrace();</b>
+&nbsp;            }
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // Gets the Chat history from the repository (NOT USED)
+&nbsp;    private String getChatHistory()
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MMessage&gt; messages = msgRepo.findAll();</b>
+&nbsp;
+&nbsp;        // convert the list to a string
+<b class="nc">&nbsp;        StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;        if(messages != null &amp;&amp; messages.size() != 0)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            for (MMessage message : messages)</b>
+<b class="nc">&nbsp;                sb.append(message.getUserName() + &quot;: &quot; + message.getContent() + &quot;\n&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return sb.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private String getUserHistory(String destUser, String username)
+&nbsp;    {
+&nbsp;        //gets both messages that you sent and the other person
+<b class="nc">&nbsp;        List&lt;MMessage&gt; messages = msgRepo.findByDestUserAndUserName(destUser, username).get();</b>
+<b class="nc">&nbsp;        messages.addAll(msgRepo.findByDestUserAndUserName(username, destUser).get());</b>
+&nbsp;
+&nbsp;        //sorting by date
+<b class="nc">&nbsp;        messages.sort(Comparator.comparing(MMessage::getSent));</b>
+&nbsp;
+<b class="nc">&nbsp;        StringBuilder sb = new StringBuilder();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (MMessage message : messages)</b>
+<b class="nc">&nbsp;            sb.append(message.getUserName() + &quot;: &quot; + message.getContent() + &quot;\n&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        return sb.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    private String getGroupHistory(int destGroupID)
+&nbsp;    {
+<b class="nc">&nbsp;        List&lt;MMessage&gt; messages = msgRepo.findByDestGroupID(destGroupID).get();</b>
+&nbsp;
+&nbsp;        //sorting by date sent before to string
+<b class="nc">&nbsp;        messages.sort(Comparator.comparing(MMessage::getSent));</b>
+&nbsp;
+<b class="nc">&nbsp;        StringBuilder sb = new StringBuilder();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (MMessage message : messages)</b>
+<b class="nc">&nbsp;            sb.append(message.getUserName() + &quot;: &quot; + message.getContent() + &quot;\n&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        return sb.toString();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-13 16:19</div>
+</div>
+</body>
+</html>

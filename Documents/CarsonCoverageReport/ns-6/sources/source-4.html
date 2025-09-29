@@ -1,0 +1,90 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RUser</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">supperSolver.Repositories</a>
+</div>
+
+<h1>Coverage Summary for Class: RUser (supperSolver.Repositories)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">RUser</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package supperSolver.Repositories;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.lang.NonNull;
+&nbsp;import supperSolver.Models.MRecipe;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;import supperSolver.Models.MUser;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;
+&nbsp;@Repository
+&nbsp;public interface RUser extends JpaRepository&lt;MUser, Integer&gt;
+&nbsp;{
+&nbsp;    Optional&lt;MUser&gt; findByUsernameAndPassword(String username, String password);
+&nbsp;    Optional&lt;MUser&gt; findByUsername(String username);
+&nbsp;    Optional&lt;List&lt;MUser&gt;&gt; findByGroupID(int groupID);
+&nbsp;
+&nbsp;    // Searching by username
+&nbsp;    @Query(&quot;SELECT u FROM MUser AS u WHERE u.username LIKE %:username%&quot;)
+&nbsp;    List&lt;MUser&gt; findByUsernameLike(@Param(&quot;username&quot;) String username);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-04 14:04</div>
+</div>
+</body>
+</html>

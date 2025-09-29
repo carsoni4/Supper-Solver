@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HomeFeed.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.suppersolver</a> &gt; <span class="el_source">HomeFeed.java</span></div><h1>HomeFeed.java</h1><pre class="source lang-java linenums">package com.example.suppersolver;
+
+import com.android.volley.toolbox.ImageRequest;
+import com.example.suppersolver.R;
+import static android.os.SystemClock.sleep;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * The supper solver home page. The websocket enables users to browse all the recipes recommended from the database.
+ * From the home page the user can access search, inventory, profile, and post. They can also access the creator's profile or the recipe screen of whatever recipe they are currently viewing.
+ */
+<span class="fc" id="L41">public class HomeFeed extends AppCompatActivity implements WebSocketListener{</span>
+    private String userID, username;
+    private Button homefeed_postBtn, nextBtn, creatorBtn, viewMyProfile, recipeName, inventory, searchBtn, adminDelete;
+    private ImageView recipeImage;
+    private TextView textDescription;
+    private JSONObject curRecipe, creatorUser;
+    private int recipeID;
+<span class="fc" id="L48">    private int creatorID = -1;</span>
+    private Boolean isAdmin, isAdvertiser;
+    private static final String wsurl = &quot;ws://coms-3090-025.class.las.iastate.edu:8080/wshomefeed/&quot;;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L54">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L55">        setContentView(R.layout.home_feed);</span>
+
+<span class="fc" id="L57">        homefeed_postBtn = findViewById(R.id.homefeed_postBtn);</span>
+<span class="fc" id="L58">        recipeName = findViewById(R.id.recipe_btn);</span>
+<span class="fc" id="L59">        textDescription = findViewById(R.id.recipe_description);</span>
+<span class="fc" id="L60">        nextBtn = findViewById(R.id.homefeed_nextBtn);</span>
+<span class="fc" id="L61">        creatorBtn = findViewById(R.id.creator_btn);</span>
+<span class="fc" id="L62">        searchBtn = findViewById(R.id.search_btn);</span>
+<span class="fc" id="L63">        viewMyProfile = findViewById(R.id.view_my_profile);</span>
+<span class="fc" id="L64">        recipeImage = findViewById(R.id.recipe_image);</span>
+<span class="fc" id="L65">        inventory = findViewById(R.id.inventory_btn);</span>
+<span class="fc" id="L66">        adminDelete = findViewById(R.id.admin_delete_recipe);</span>
+
+<span class="fc" id="L68">        Bundle extras = getIntent().getExtras();</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (extras == null) {</span>
+<span class="nc" id="L70">            Toast.makeText(HomeFeed.this, &quot;cannot find user&quot;, Toast.LENGTH_SHORT).show();</span>
+        } else {
+<span class="fc" id="L72">            userID = extras.getString(&quot;USERID&quot;);</span>
+<span class="fc" id="L73">            username = extras.getString(&quot;username&quot;);</span>
+<span class="fc" id="L74">            isAdmin = extras.getBoolean(&quot;isAdmin&quot;);</span>
+<span class="fc" id="L75">            isAdvertiser = extras.getBoolean(&quot;isAdvertiser&quot;);</span>
+        }
+
+<span class="fc" id="L78">        adminDelete.setVisibility(View.VISIBLE);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if(!isAdmin){</span>
+<span class="fc" id="L80">            adminDelete.setVisibility(View.INVISIBLE);</span>
+        }
+
+<span class="fc" id="L83">        WebSocketManager.getInstance().connectWebSocket(wsurl + userID);</span>
+<span class="fc" id="L84">        WebSocketManager.getInstance().setWebSocketListener(HomeFeed.this);</span>
+
+<span class="fc" id="L86">        searchBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L89">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L90">                Intent intent = new Intent(HomeFeed.this, SearchScreen.class);</span>
+<span class="fc" id="L91">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L92">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L93">                startActivity(intent);</span>
+<span class="fc" id="L94">            }</span>
+        });
+
+        //switch to PostRecipe class
+<span class="fc" id="L98">        homefeed_postBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L101">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L102">                Intent intent = new Intent(HomeFeed.this, PostRecipe.class);</span>
+<span class="fc" id="L103">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L104">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L105">                startActivity(intent);</span>
+<span class="fc" id="L106">            }</span>
+        });
+
+<span class="fc" id="L109">        nextBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="fc" id="L113">                    WebSocketManager.getInstance().sendMessage(&quot;scrolled&quot;);</span>
+<span class="nc" id="L114">                } catch (Exception e) {</span>
+<span class="nc" id="L115">                    Log.d(&quot;ExceptionSendMessage:&quot;, e.getMessage().toString());</span>
+<span class="fc" id="L116">                }</span>
+<span class="fc" id="L117">            }</span>
+        });
+
+<span class="fc" id="L120">        creatorBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">                if (creatorID != -1) {</span>
+<span class="fc" id="L124">                    WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L125">                    Intent intent = new Intent(HomeFeed.this, ProfileScreen.class);</span>
+<span class="fc" id="L126">                    intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L127">                    intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L128">                    intent.putExtra(&quot;creatorID&quot;, String.valueOf(creatorID));</span>
+<span class="fc" id="L129">                    startActivity(intent);</span>
+                }
+<span class="fc" id="L131">            }</span>
+        });
+
+<span class="fc" id="L134">        recipeName.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">                if (creatorID != -1) {</span>
+<span class="fc" id="L138">                    WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L139">                    Intent intent = new Intent(HomeFeed.this, RecipeScreen.class);</span>
+<span class="fc" id="L140">                    intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L141">                    intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L142">                    intent.putExtra(&quot;recipeID&quot;, String.valueOf(recipeID));</span>
+<span class="fc" id="L143">                    intent.putExtra(&quot;recipeName&quot;, recipeName.getText().toString());</span>
+<span class="fc" id="L144">                    intent.putExtra(&quot;rDescription&quot;, textDescription.getText().toString());</span>
+<span class="fc" id="L145">                    intent.putExtra(&quot;creatorName&quot;, creatorBtn.getText().toString());</span>
+<span class="fc" id="L146">                    startActivity(intent);</span>
+                }
+<span class="fc" id="L148">            }</span>
+        });
+
+<span class="fc" id="L151">        viewMyProfile.setOnClickListener(new View.OnClickListener() {</span>
+            public void onClick(View v) {
+<span class="fc" id="L153">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L154">                Intent intent = new Intent(HomeFeed.this, ProfileScreen.class);</span>
+<span class="fc" id="L155">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L156">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L157">                startActivity(intent);</span>
+<span class="fc" id="L158">            }</span>
+        });
+
+<span class="fc" id="L161">        inventory.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L164">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L165">                Intent intent = new Intent(HomeFeed.this, InventoryScreen.class);</span>
+<span class="fc" id="L166">                intent.putExtra(&quot;username&quot;, username);</span>
+<span class="fc" id="L167">                intent.putExtra(&quot;USERID&quot;, userID);</span>
+<span class="fc" id="L168">                intent.putExtra(&quot;creatorID&quot;, creatorID);</span>
+<span class="fc" id="L169">                startActivity(intent);</span>
+<span class="fc" id="L170">            }</span>
+        });
+<span class="fc" id="L172">    }</span>
+
+    @Override
+    public void onWebSocketMessage(String message) {
+
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (!message.equals(&quot;No more recipes in database&quot;)) {</span>
+            try{
+<span class="fc" id="L179">                curRecipe = new JSONObject(message);</span>
+<span class="fc" id="L180">                creatorUser = curRecipe.getJSONObject(&quot;user&quot;);</span>
+<span class="fc" id="L181">                recipeID = curRecipe.getInt(&quot;ID&quot;);</span>
+<span class="fc" id="L182">                creatorID = creatorUser.getInt(&quot;ID&quot;);</span>
+<span class="fc" id="L183">                String u = creatorUser.getString(&quot;username&quot;);</span>
+<span class="fc" id="L184">                String n = curRecipe.getString(&quot;name&quot;);</span>
+<span class="fc" id="L185">                String d = curRecipe.getString(&quot;description&quot;);</span>
+
+<span class="fc" id="L187">                runOnUiThread(new Runnable() {</span>
+                    @Override
+                    public void run() {
+<span class="fc" id="L190">                        creatorBtn.setText(u);</span>
+<span class="fc" id="L191">                        recipeName.setText(n);</span>
+<span class="fc" id="L192">                        textDescription.setText(d);</span>
+<span class="fc" id="L193">                    }</span>
+                });
+
+<span class="fc" id="L196">                String imgSrcUrl = curRecipe.getString(&quot;imgURL&quot;);</span>
+<span class="fc" id="L197">                makeImageRequest(imgSrcUrl);</span>
+<span class="fc" id="L198">            } catch (JSONException e) {</span>
+<span class="fc" id="L199">                throw new RuntimeException(e);</span>
+<span class="fc" id="L200">            }</span>
+        }
+<span class="fc" id="L202">    }</span>
+
+    @Override
+<span class="fc" id="L205">    public void onWebSocketClose(int code, String reason, boolean remote) {}</span>
+
+    @Override
+<span class="fc" id="L208">    public void onWebSocketOpen(ServerHandshake handshakedata) {}</span>
+
+    @Override
+<span class="fc" id="L211">    public void onWebSocketError(Exception ex) {}</span>
+
+    private void makeImageRequest(String imageurl) {
+
+<span class="fc" id="L215">        ImageRequest imageRequest = new ImageRequest(</span>
+                imageurl,
+<span class="fc" id="L217">                new Response.Listener&lt;Bitmap&gt;() {</span>
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        // Display the image in the ImageView
+<span class="fc" id="L221">                        recipeImage.setImageBitmap(response);</span>
+<span class="fc" id="L222">                    }</span>
+                },
+                0, // Width, set to 0 to get the original width
+                0, // Height, set to 0 to get the original height
+                ImageView.ScaleType.FIT_XY, // ScaleType
+                Bitmap.Config.RGB_565, // Bitmap config
+
+<span class="fc" id="L229">                new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Handle errors here
+<span class="fc" id="L233">                        Log.e(&quot;Volley Error&quot;, error.toString());</span>
+<span class="fc" id="L234">                    }</span>
+                }
+        );
+
+        // Adding request to request queue
+<span class="fc" id="L239">        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(imageRequest);</span>
+<span class="fc" id="L240">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span>Generated by the Android Gradle plugin 8.6.0</div></body></html>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/comment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundBlack"
+    tools:context=".CommentScreen">
+
+
+    <TextView
+        android:id="@+id/tvResponse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></TextView>
+
+    <TextView
+        android:id="@+id/msgResponse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="448dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></TextView>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="88dp"
+        android:text="Comments"
+        android:textColor="#EDA071"
+        android:textSize="10pt"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></TextView>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="119dp"
+        android:layout_marginBottom="296dp"
+        android:background="#fcfec3"
+        app:layout_constraintBottom_toTopOf="@+id/tvResponse"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.163" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="68dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.28">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="exampleUser"
+            android:textColor="#fcfec3"
+            android:textSize="10dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <TextView
+            android:id="@+id/commentUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Example comment, commenting about x, y, or z."
+            android:textColor="#EDA071"
+            android:textSize="14dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:backgroundTint="#533B2D"
+            android:text="Delete"
+            android:textStyle="bold"
+            android:textColor="#EDA071"
+            android:textSize="10dp" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="30dp"></Space>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="exampleUser"
+            android:textColor="#fcfec3"
+            android:textSize="10dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <TextView
+            android:id="@+id/comment1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Example comment, commenting about x, y, or z."
+            android:textColor="#EDA071"
+            android:textSize="14dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="30dp"></Space>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="exampleUser"
+            android:textColor="#fcfec3"
+            android:textSize="10dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <TextView
+            android:id="@+id/comment2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Example comment, commenting about x, y, or z."
+            android:textColor="#EDA071"
+            android:textSize="14dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="30dp"></Space>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="exampleUser"
+            android:textColor="#fcfec3"
+            android:textSize="10dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+        <TextView
+            android:id="@+id/comment3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Example comment, commenting about x, y, or z."
+            android:textColor="#EDA071"
+            android:textSize="14dp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="256dp"></TextView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="35dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Add Comment: "
+            android:textColor="#EDA071"
+            android:textSize="16dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/comment_edt"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:hint="Type Comment Here"
+            android:inputType="text"
+            android:textColor="#EDA071"
+            android:textColorHint="#EDA071"
+            android:textSize="14dp"></EditText>
+
+        <Button
+            android:id="@+id/cmtSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:textColor="#EDA071"
+            android:textStyle="bold"
+            android:text="Send" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="35dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:layout_constraintVertical_bias="0.885">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Edit Comment: "
+            android:textColor="#EDA071"
+            android:textSize="16dp"
+            android:textStyle="bold"></TextView>
+
+        <EditText
+            android:id="@+id/comment_edt_edt"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:hint="Type Comment Here"
+            android:inputType="text"
+            android:textColor="#EDA071"
+            android:textColorHint="#EDA071"
+            android:textSize="14dp"></EditText>
+
+        <Button
+            android:id="@+id/cmtEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#533B2D"
+            android:textColor="#EDA071"
+            android:textStyle="bold"
+            android:text="Edit" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
