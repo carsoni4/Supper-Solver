@@ -1,6 +1,6 @@
 # Frontend By: Brandon Liao and Ryan Holden
 # Backend By: Aden Koziol and Carson Irving
-# Done for class: COMS 309
+# Done for class: COMS 309 Fall of 2024
 
 # 2_jabir_1
 
